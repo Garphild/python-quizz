@@ -5,6 +5,7 @@ from pydantic import Field, BaseModel
 class QuestionDto(BaseModel):
     id: Annotated[int, Field(description="Question ID")]
     text: Annotated[str, Field(description="Question text")]
+    quizz_id: Annotated[int, Field(description="Linked Quizz Id")]
     created_at: Annotated[datetime, Field(description="Creation timestamp")]
     updated_at: Annotated[datetime, Field(description="Update timestamp")]
     deleted_at: Annotated[datetime | None, Field(description="Deletion timestamp", default=None)]

@@ -18,3 +18,5 @@ class QuestionsService:
     
     async def get_questions_by_quizz_id(self, quizz_id: int):
         return []
+
+questionService = QuestionsService()

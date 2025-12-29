@@ -3,8 +3,7 @@ from providers.postgree_provider import get_db
 from sqlalchemy.orm import Session
 from fastapi import Depends
 
-from routes.auth.dto.auth_dto import RegisterRequest
-from routes.auth.dto.profile_dto import ProfileDto
+from routes.dto.auth_dto import RegisterRequestDto, ProfileDto
 
 class UserService:
     async def get_by_email(self, email: str, db: Session = Depends(get_db)) -> ProfileDto | None:
@@ -20,8 +19,15 @@ class UserService:
         finally:
             db.close()
 
-    
-    async def create_user(self, user: RegisterRequest, db: Session = Depends(get_db)) -> ProfileDto:
+    async def get_by_id(self, id: int, db: Session = Depends(get_db)) -> UserModel:
+        user = db.query(UserModel).filter(UserModel.id == id).first()
+
+        if user is None:
+            return None
+
+        return user
+
+    async def create_user(self, user: RegisterRequestDto, db: Session = Depends(get_db)) -> ProfileDto:
         try:
             user_model = UserModel(
                 email=user.email,
@@ -42,9 +48,9 @@ class UserService:
         
     
 
-    async def update_user(self, user_id: int, user_data: RegisterRequest, db: Session = Depends(get_db)) -> ProfileDto | None:
+    async def update_user(self, user_id: int, user_data: RegisterRequestDto, db: Session = Depends(get_db)) -> ProfileDto | None:
         try:
-            user_model = db.query(UserModel).filter(UserModel.id == user_id).first()
+            user_model = await self.get_by_id(user_id, db)
             if user_model is None:
                 return None
             
@@ -63,7 +69,7 @@ class UserService:
 
     async def delete_user(self, user_id: int, db: Session = Depends(get_db)) -> bool:
         try:
-            user_model = db.query(UserModel).filter(UserModel.id == user_id).first()
+            user_model = await self.get_by_id(user_id, db)
             if user_model is None:
                 return False
             
@@ -74,3 +80,5 @@ class UserService:
             return False
         finally:
             db.close()
+
+user_service = UserService()

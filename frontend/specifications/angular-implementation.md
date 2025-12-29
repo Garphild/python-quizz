@@ -84,57 +84,51 @@ export const environment = {
 
 ## 4.1 Authentication
 
-| Method | Endpoint               | Request                                 | Response                                                     |
-| ------ | ---------------------- | --------------------------------------- | ------------------------------------------------------------ |
-| POST   | `/api/auth/login`    | `{ email, password }`                 | `{ message, access_token, user_id, email, name, surname }` |
-| POST   | `/api/auth/register` | `{ email, password, name, surname? }` | `{ id, email, name, surname }`                             |
+| Method | Endpoint                  | Request                                 | Response       | Notes                          |
+| ------ | ------------------------- | --------------------------------------- | -------------- | ------------------------------ |
+| POST   | `/api/auth/register`      | `{ email, password, name, surname? }`   | `boolean`      | `true` при успехе              |
+| POST   | `/api/auth/login`         | `{ email, password }`                   | `ProfileDto`   | Token в cookie `auth_token`    |
+| POST   | `/api/auth/logout`        | —                                       | `boolean`      | Видаляє cookie                 |
+| GET    | `/api/auth/profile`       | —                                       | `ProfileDto`   | Потребує auth cookie           |
+| POST   | `/api/auth/change-password` | `{ old_password, new_password }`      | `ProfileDto`   | Зміна пароля                   |
+| POST   | `/api/auth/update-profile`  | `{ name?, surname? }`                 | `ProfileDto`   | Оновлення профілю              |
 
-## 4.2 Admin Quizzes
+**Note:** Токен JWT встановлюється як HttpOnly cookie `auth_token`, а не в response body.
 
-| Method | Endpoint                             | Request                     | Response            |
-| ------ | ------------------------------------ | --------------------------- | ------------------- |
-| GET    | `/api/admin/quizz?page=0&limit=10` | —                          | `AdminQuizzDto[]` |
-| GET    | `/api/admin/quizz/:id`             | —                          | `AdminQuizzDto`   |
-| POST   | `/api/admin/quizz`                 | `{ name, description }`   | `AdminQuizzDto`   |
-| PUT    | `/api/admin/quizz/:id`             | `{ name?, description? }` | `AdminQuizzDto`   |
-| DELETE | `/api/admin/quizz/:id`             | —                          | `AdminQuizzDto`   |
+## 4.2 Quizzes (Public)
 
-## 4.3 Admin Questions
+| Method | Endpoint                  | Request                     | Response      |
+| ------ | ------------------------- | --------------------------- | ------------- |
+| GET    | `/api/quizz`              | —                           | `QuizzDto[]`  |
+| GET    | `/api/quizz/:id`          | —                           | `QuizzDto`    |
+| POST   | `/api/quizz`              | `{ url }`                   | `QuizzDto`    |
+| PUT    | `/api/quizz/:id`          | `{ name?, description? }`   | `QuizzDto`    |
+| DELETE | `/api/quizz/:id`          | —                           | `boolean`     |
 
-| Method | Endpoint                                   | Request      | Response          |
-| ------ | ------------------------------------------ | ------------ | ----------------- |
-| GET    | `/admin/quizz/:id/questions`             | —           | `QuestionDto[]` |
-| GET    | `/admin/quizz/:id/questions/:questionId` | —           | `QuestionDto`   |
-| POST   | `/admin/quizz/:id/questions`             | `{ text }` | `QuestionDto`   |
-| PUT    | `/admin/quizz/:id/questions/:questionId` | `{ text }` | `QuestionDto`   |
-| DELETE | `/admin/quizz/:id/questions/:questionId` | —           | `QuestionDto`   |
+**Note:** `CreateQuizzDto` принимает только `url` (YouTube URL). Квиз создается с автоматической генерацией вопросов через AI.
 
-## 4.4 Admin Answers
+## 4.3 Questions
 
-| Method | Endpoint                                    | Request                   | Response     |
-| ------ | ------------------------------------------- | ------------------------- | ------------ |
-| GET    | `/admin/quizz/:quizzId/answers`           | —                        | `Answer[]` |
-| POST   | `/admin/quizz/:quizzId/answers`           | `{ text, isCorrect }`   | `Answer`   |
-| PUT    | `/admin/quizz/:quizzId/answers/:answerId` | `{ text?, isCorrect? }` | `Answer`   |
-| DELETE | `/admin/quizz/:quizzId/answers/:answerId` | —                        | —           |
+| Method | Endpoint                                | Request      | Response          |
+| ------ | --------------------------------------- | ------------ | ----------------- |
+| GET    | `/api/quizz/:quizzId/questions`         | —            | `QuestionDto[]`   |
+| GET    | `/api/quizz/:quizzId/questions/:id`     | —            | `QuestionDto`     |
+| POST   | `/api/quizz/:quizzId/questions`         | `{ text }`   | `QuestionDto`     |
+| PUT    | `/api/quizz/:quizzId/questions/:id`     | `{ text }`   | `QuestionDto`     |
+| DELETE | `/api/quizz/:quizzId/questions/:id`     | —            | `boolean`         |
 
-## 4.5 AI Generation
+## 4.4 Answers
 
-| Method | Endpoint                     | Description              |
-| ------ | ---------------------------- | ------------------------ |
-| POST   | `/admin/quizz/ai`          | Create quiz with AI      |
-| GET    | `/admin/quizz/ai`          | Get AI-generated quizzes |
-| GET    | `/admin/quizz/ai/:quizzId` | Get specific AI quiz     |
-| DELETE | `/admin/quizz/ai/:quizzId` | Delete AI quiz           |
+| Method | Endpoint                                          | Request                                                    | Response           |
+| ------ | ------------------------------------------------- | ---------------------------------------------------------- | ------------------ |
+| GET    | `/api/quizz/:quizzId/answers`                     | —                                                          | `AnswerDto[]`      |
+| GET    | `/api/quizz/:quizzId/answers/:id`                 | —                                                          | `AnswerDto`        |
+| POST   | `/api/quizz/:quizzId/answers`                     | `{ text, is_correct, description, valid_description? }`   | `AnswerDto`        |
+| PUT    | `/api/quizz/:quizzId/answers/:id`                 | `{ text, is_correct, description, valid_description? }`    | `AnswerDto`        |
+| DELETE | `/api/quizz/:quizzId/answers/:id`                 | —                                                          | `boolean`          |
+| GET    | `/api/quizz/:quizzId/answers/validate/:questionId/:answerId` | —                                                  | `ValidateAnswerDto` |
 
-## 4.6 Public Quizzes
-
-| Method | Endpoint                              | Response              |
-| ------ | ------------------------------------- | --------------------- |
-| GET    | `/quizz`                            | All available quizzes |
-| GET    | `/quizz/:quizzId`                   | Specific quiz         |
-| GET    | `/quizz/:quizzId/answers`           | Answers for quiz      |
-| GET    | `/quizz/:quizzId/answers/:answerId` | Specific answer       |
+**Note:** Endpoint валидации возвращает `is_correct`, `description` и `valid_description` для feedback.
 
 ---
 
@@ -144,57 +138,56 @@ export const environment = {
 
 ```typescript
 // Request DTOs
-interface LoginRequest {
+interface LoginRequestDto {
   email: string;
   password: string;
 }
 
-interface RegisterRequest {
+interface RegisterRequestDto {
   email: string;
   password: string;
   name: string;
   surname?: string;
 }
 
-// Response DTOs
-interface LoginResponse {
-  message: string;
-  access_token: string;
-  user_id: string;
-  email: string;
-  name: string;
-  surname: string;
+interface UpdateProfileDto {
+  name?: string;
+  surname?: string;
 }
 
-interface PublicUser {
+interface ChangePasswordDto {
+  old_password: string;
+  new_password: string;
+}
+
+// Response DTOs
+interface ProfileDto {
   id: number;
-  name: string;
-  surname: string;
   email: string;
-  created_at?: string;
-  updated_at?: string;
+  name: string;
+  surname?: string;
 }
 ```
 
 ## 5.2 Quiz Types
 
 ```typescript
-interface AdminQuizz {
+interface QuizzDto {
   id: number;
   name: string;
   description: string;
+  url: string; // YouTube URL
   questions_count: number;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string;
 }
 
-interface CreateQuizz {
-  name: string;
-  description: string;
+interface CreateQuizzDto {
+  url: string; // YouTube URL - AI генерирует вопросы из видео
 }
 
-interface UpdateQuizz {
+interface UpdateQuizzDto {
   name?: string;
   description?: string;
 }
@@ -203,32 +196,58 @@ interface UpdateQuizz {
 ## 5.3 Question Types
 
 ```typescript
-interface Question {
+interface QuestionDto {
   id: number;
   text: string;
+  quizz_id: number; // Зв'язок з квізом
   created_at: string;
   updated_at: string;
   deleted_at?: string;
 }
 
-interface CreateQuestion {
+interface CreateQuestionDto {
   text: string;
+}
+
+interface UpdateQuestionDto {
+  text: string;
+}
+
+interface QuestionListDto {
+  questions: QuestionDto[];
 }
 ```
 
 ## 5.4 Answer Types
 
 ```typescript
-interface Answer {
+interface AnswerDto {
   id: number;
   text: string;
-  isCorrect: boolean;
-  questionId: number;
+  is_correct: boolean;
+  question_id: number; // Зв'язок з питанням (ВАЖЛИВО: потрібно додати на бекенді!)
+  description: string; // Пояснення чому відповідь неправильна
+  valid_description?: string; // Пояснення чому відповідь правильна
 }
 
-interface CreateAnswer {
+interface CreateAnswerDto {
   text: string;
-  isCorrect: boolean;
+  is_correct: boolean;
+  description: string;
+  valid_description?: string;
+}
+
+interface UpdateAnswerDto {
+  text: string; // required
+  is_correct: boolean; // required
+  description: string; // required
+  valid_description?: string;
+}
+
+interface ValidateAnswerDto {
+  is_correct: boolean;
+  description: string;
+  valid_description?: string;
 }
 ```
 
@@ -434,6 +453,7 @@ export const routes: Routes = [
       { path: 'quizzes/:id/run/q/:index', component: QuestionComponent },
       { path: 'quizzes/:id/run/feedback', component: FeedbackComponent },
       { path: 'quizzes/:id/run/results', component: ResultsComponent },
+      { path: 'profile', component: ProfileComponent },
     ]
   },
   
@@ -473,12 +493,13 @@ export const routes: Routes = [
 **Логіка:**
 
 - POST `/api/auth/login`
-- Зберегти `access_token` в localStorage
+- Сервер встановлює `auth_token` cookie (HttpOnly)
+- Зберегти `ProfileDto` в `AuthService.currentUser` signal
 - Redirect до `/app/quizzes`
 
 **Acceptance:**
 
-- [ ] Невірні креденшали → показати помилку
+- [ ] Невірні креденшали → показати помилку "Invalid credentials"
 - [ ] Успішно → redirect + доступ до приватних сторінок
 
 ---
@@ -497,14 +518,15 @@ export const routes: Routes = [
 **Логіка:**
 
 - Валідація confirmPassword === password
-- POST `/auth/register`
-- Після успіху → redirect на login або автологін
+- POST `/api/auth/register`
+- Response: `boolean` (true при успіху)
+- Після успіху → redirect на login
 
 **Acceptance:**
 
 - [ ] Валідація confirmPassword
-- [ ] Існуючий email → помилка "User with this email already exists"
-- [ ] Успіх → користувач у системі
+- [ ] Існуючий email → помилка "User with this email already exists" (400)
+- [ ] Успіх → redirect на login
 
 ---
 
@@ -519,18 +541,18 @@ export const routes: Routes = [
   - Created At
   - Actions: Edit / Run / Delete
 - Search input (по name)
-- Create button
+- Create button (веде на форму з YouTube URL)
 
 **Логіка:**
 
-- GET `/admin/quizz?page=0&limit=10`
+- GET `/api/quizz`
 - Client-side filtering по name
-- Pagination
+- Pagination (якщо потрібна)
 
 **Acceptance:**
 
 - [ ] Пошук працює
-- [ ] Create веде на форму
+- [ ] Create веде на форму з URL input
 - [ ] Edit/Run/Delete працюють
 
 ---
@@ -539,19 +561,21 @@ export const routes: Routes = [
 
 **UI:**
 
-- name (input, required)
-- description (textarea, required)
+- YouTube URL (input, required)
 - Submit button
+- Loading state під час генерації вопросів AI
 
 **Логіка:**
 
-- POST `/admin/quizz` з `{ name, description }`
-- Redirect на список
+- POST `/api/quizz` з `{ url }`
+- AI генерирует вопросы и ответы автоматически
+- Redirect на список після успіху
 
 **Acceptance:**
 
-- [ ] Валідація required полів
+- [ ] Валідація YouTube URL
 - [ ] Успіх → snackbar + redirect
+- [ ] Loading state під час обробки
 
 ---
 
@@ -559,12 +583,15 @@ export const routes: Routes = [
 
 **UI:**
 
-- Заголовок: name
+- Заголовок: name (можна редагувати)
+- Description (можна редагувати)
 - Список питань (cards/accordion):
   - Question text (input)
   - Answers list:
     - answer text
-    - radio "correct"
+    - is_correct (radio/checkbox)
+    - description (пояснення неправильної відповіді)
+    - valid_description (пояснення правильної відповіді)
     - delete answer
   - Add answer
   - Delete question
@@ -573,14 +600,16 @@ export const routes: Routes = [
 
 **Логіка:**
 
-- GET `/admin/quizz/:id` + GET `/admin/quizz/:id/questions`
-- Save → PUT/PATCH endpoints
+- GET `/api/quizz/:id` + GET `/api/quizz/:id/questions` + GET `/api/quizz/:id/answers`
+- PUT `/api/quizz/:id` для оновлення name/description
+- POST/PUT/DELETE для питань і відповідей
 
 **Acceptance:**
 
 - [ ] Можна редагувати питання/відповіді
 - [ ] Можна додавати/видаляти
 - [ ] Save працює
+- [ ] Пояснення (description/valid_description) зберігаються
 
 ---
 
@@ -662,6 +691,31 @@ export const routes: Routes = [
 
 ---
 
+## 9.11 Profile (`/app/profile`)
+
+**UI:**
+
+- Дані профілю (email, name, surname)
+- Форма редагування (name, surname)
+- Секція зміни пароля (old_password, new_password, confirm_password)
+- Save buttons
+
+**Логіка:**
+
+- GET `/api/auth/profile` при завантаженні
+- POST `/api/auth/update-profile` для оновлення даних
+- POST `/api/auth/change-password` для зміни пароля
+- Logout button → POST `/api/auth/logout` → redirect на `/`
+
+**Acceptance:**
+
+- [ ] Профіль відображається коректно
+- [ ] Можна змінити name/surname
+- [ ] Можна змінити пароль
+- [ ] Logout очищає session і редіректить
+
+---
+
 # 10) Core Services
 
 ## AuthService
@@ -671,13 +725,20 @@ export const routes: Routes = [
 export class AuthService {
   private http = inject(HttpClient);
   
-  currentUser = signal<PublicUser | null>(null);
+  currentUser = signal<ProfileDto | null>(null);
   isAuthenticated = computed(() => !!this.currentUser());
   
-  login(credentials: LoginRequest): Observable<LoginResponse>;
-  register(data: RegisterRequest): Observable<PublicUser>;
-  logout(): void;
-  getToken(): string | null;
+  // Auth endpoints (cookie-based)
+  login(credentials: LoginRequestDto): Observable<ProfileDto>;
+  register(data: RegisterRequestDto): Observable<boolean>;
+  logout(): Observable<boolean>;
+  
+  // Profile endpoints
+  getProfile(): Observable<ProfileDto>;
+  updateProfile(data: UpdateProfileDto): Observable<ProfileDto>;
+  changePassword(data: ChangePasswordDto): Observable<ProfileDto>;
+  
+  // Note: Token управляется через HttpOnly cookie, не через localStorage
 }
 ```
 
@@ -688,16 +749,27 @@ export class AuthService {
 export class QuizService {
   private http = inject(HttpClient);
   
-  getQuizzes(page: number, limit: number): Observable<AdminQuizz[]>;
-  getQuiz(id: number): Observable<AdminQuizz>;
-  createQuiz(data: CreateQuizz): Observable<AdminQuizz>;
-  updateQuiz(id: number, data: UpdateQuizz): Observable<AdminQuizz>;
-  deleteQuiz(id: number): Observable<void>;
+  // Quizzes
+  getQuizzes(): Observable<QuizzDto[]>;
+  getQuiz(id: number): Observable<QuizzDto>;
+  createQuiz(data: CreateQuizzDto): Observable<QuizzDto>;
+  updateQuiz(id: number, data: UpdateQuizzDto): Observable<QuizzDto>;
+  deleteQuiz(id: number): Observable<boolean>;
   
-  getQuestions(quizId: number): Observable<Question[]>;
-  createQuestion(quizId: number, data: CreateQuestion): Observable<Question>;
-  updateQuestion(quizId: number, questionId: number, data: CreateQuestion): Observable<Question>;
-  deleteQuestion(quizId: number, questionId: number): Observable<void>;
+  // Questions
+  getQuestions(quizId: number): Observable<QuestionDto[]>;
+  getQuestion(quizId: number, questionId: number): Observable<QuestionDto>;
+  createQuestion(quizId: number, data: CreateQuestionDto): Observable<QuestionDto>;
+  updateQuestion(quizId: number, questionId: number, data: UpdateQuestionDto): Observable<QuestionDto>;
+  deleteQuestion(quizId: number, questionId: number): Observable<boolean>;
+  
+  // Answers
+  getAnswers(quizId: number): Observable<AnswerDto[]>;
+  getAnswer(quizId: number, answerId: number): Observable<AnswerDto>;
+  createAnswer(quizId: number, data: CreateAnswerDto): Observable<AnswerDto>;
+  updateAnswer(quizId: number, answerId: number, data: UpdateAnswerDto): Observable<AnswerDto>;
+  deleteAnswer(quizId: number, answerId: number): Observable<boolean>;
+  validateAnswer(quizId: number, questionId: number, answerId: number): Observable<ValidateAnswerDto>;
 }
 ```
 
@@ -722,16 +794,34 @@ export class NotificationService {
 
 ```typescript
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const token = authService.getToken();
-  
-  if (token && req.url.startsWith('/api')) {
+  // Cookie-based auth: браузер автоматично додає cookie
+  // Потрібно лише встановити withCredentials для cross-origin запитів
+  if (req.url.startsWith('/api')) {
     req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
+      withCredentials: true
     });
   }
   
   return next(req);
+};
+```
+
+## ErrorInterceptor
+
+```typescript
+export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
+  const notification = inject(NotificationService);
+  
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        router.navigate(['/auth/login']);
+      }
+      notification.error(error.error?.detail || 'An error occurred');
+      return throwError(() => error);
+    })
+  );
 };
 ```
 
@@ -760,11 +850,80 @@ export const authGuard: CanActivateFn = (route, state) => {
 
 # 13) i18n + RTL
 
-## Language Switch
+## Бібліотека: @ngx-translate/core
 
-- Перемикач мови в header
-- Зберігати в localStorage
-- Для `he`: `document.documentElement.dir = 'rtl'`
+**Встановлення:**
+```bash
+npm install @ngx-translate/core @ngx-translate/http-loader
+```
+
+**Конфігурація (app.config.ts):**
+```typescript
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    importProvidersFrom(
+      TranslateModule.forRoot({
+        defaultLanguage: 'uk',
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+        }
+      })
+    )
+  ]
+};
+```
+
+## I18nService
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class I18nService {
+  private translate = inject(TranslateService);
+  
+  currentLang = signal<string>('uk');
+  
+  constructor() {
+    const saved = localStorage.getItem('lang') || 'uk';
+    this.setLanguage(saved);
+  }
+  
+  setLanguage(lang: string): void {
+    this.translate.use(lang);
+    this.currentLang.set(lang);
+    localStorage.setItem('lang', lang);
+    
+    // RTL support for Hebrew
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  }
+  
+  get supportedLanguages(): string[] {
+    return ['uk', 'en', 'he'];
+  }
+}
+```
+
+## Використання в компонентах
+
+```typescript
+// В template
+<h1>{{ 'HOME.TITLE' | translate }}</h1>
+
+// В коді
+private translate = inject(TranslateService);
+this.translate.instant('ERRORS.INVALID_EMAIL');
+```
 
 ## Translation Files
 
@@ -775,9 +934,173 @@ assets/i18n/
 └── he.json
 ```
 
+**Приклад uk.json:**
+```json
+{
+  "COMMON": {
+    "SAVE": "Зберегти",
+    "CANCEL": "Скасувати",
+    "DELETE": "Видалити",
+    "EDIT": "Редагувати",
+    "LOADING": "Завантаження...",
+    "NO_DATA": "Немає даних"
+  },
+  "AUTH": {
+    "LOGIN": "Увійти",
+    "REGISTER": "Реєстрація",
+    "LOGOUT": "Вийти",
+    "EMAIL": "Email",
+    "PASSWORD": "Пароль",
+    "NAME": "Ім'я",
+    "SURNAME": "Прізвище"
+  },
+  "ERRORS": {
+    "REQUIRED": "Обов'язкове поле",
+    "INVALID_EMAIL": "Невірний формат email",
+    "MIN_LENGTH": "Мінімум {{min}} символів",
+    "PASSWORDS_MISMATCH": "Паролі не співпадають"
+  },
+  "QUIZ": {
+    "LIST_TITLE": "Мої квізи",
+    "CREATE": "Створити квіз",
+    "QUESTIONS": "Питання",
+    "RUN": "Почати"
+  }
+}
+```
+
+## RTL Support (styles.scss)
+
+```scss
+[dir="rtl"] {
+  .mat-drawer-container {
+    direction: rtl;
+  }
+  
+  .text-start {
+    text-align: right !important;
+  }
+  
+  .text-end {
+    text-align: left !important;
+  }
+}
+```
+
 ---
 
-# 14) Acceptance Criteria (Summary)
+# 14) Form Validation Rules
+
+## Загальні правила
+
+| Поле | Правила |
+|------|---------|
+| **email** | Required, Email format, max 255 chars |
+| **password** | Required, min 8 chars, max 128 chars |
+| **name** | Required, min 2 chars, max 100 chars |
+| **surname** | Optional, max 100 chars |
+| **quiz.url** | Required, YouTube URL pattern |
+| **question.text** | Required, min 10 chars, max 500 chars |
+| **answer.text** | Required, min 1 char, max 300 chars |
+
+## Validators
+
+```typescript
+export const ValidationPatterns = {
+  email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  youtubeUrl: /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/,
+  password: /^.{8,128}$/
+};
+
+export const ValidationMessages = {
+  required: 'ERRORS.REQUIRED',
+  email: 'ERRORS.INVALID_EMAIL',
+  minlength: 'ERRORS.MIN_LENGTH',
+  maxlength: 'ERRORS.MAX_LENGTH',
+  pattern: 'ERRORS.INVALID_FORMAT',
+  passwordMismatch: 'ERRORS.PASSWORDS_MISMATCH'
+};
+```
+
+---
+
+# 15) UI States
+
+## Loading States
+
+Кожен async запит повинен мати loading state:
+
+```typescript
+interface LoadingState {
+  isLoading: signal<boolean>;
+  error: signal<string | null>;
+}
+
+// Використання в компоненті
+isLoading = signal(false);
+error = signal<string | null>(null);
+
+async loadData() {
+  this.isLoading.set(true);
+  this.error.set(null);
+  try {
+    const data = await firstValueFrom(this.service.getData());
+    // handle data
+  } catch (e) {
+    this.error.set('Failed to load data');
+  } finally {
+    this.isLoading.set(false);
+  }
+}
+```
+
+**UI паттерн:**
+```html
+@if (isLoading()) {
+  <mat-spinner diameter="40"></mat-spinner>
+} @else if (error()) {
+  <div class="error">{{ error() }}</div>
+} @else {
+  <!-- content -->
+}
+```
+
+## Empty States
+
+| Екран | Empty State Message |
+|-------|---------------------|
+| Quiz List | "У вас ще немає квізів. Створіть перший!" + CTA button |
+| Questions (Edit) | "Квіз не має питань. Додайте перше питання." |
+| Answers (Edit) | "Питання не має відповідей. Додайте варіанти." |
+| Run Results History | "Ви ще не проходили цей квіз." |
+
+## Confirmation Dialogs
+
+**Потрібно підтвердження для:**
+- Delete Quiz
+- Delete Question
+- Delete Answer
+- Logout (optional)
+
+```typescript
+// Використання MatDialog
+async confirmDelete(item: string): Promise<boolean> {
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    data: {
+      title: 'COMMON.CONFIRM_DELETE',
+      message: `COMMON.DELETE_CONFIRM_MESSAGE`,
+      confirmText: 'COMMON.DELETE',
+      cancelText: 'COMMON.CANCEL'
+    }
+  });
+  
+  return firstValueFrom(dialogRef.afterClosed());
+}
+```
+
+---
+
+# 16) Acceptance Criteria (Summary)
 
 ## Auth
 
@@ -820,7 +1143,7 @@ assets/i18n/
 
 ---
 
-# 15) Додаткові рекомендації
+# 17) Додаткові рекомендації
 
 ## Performance
 
@@ -837,23 +1160,48 @@ assets/i18n/
 
 ## Error Handling
 
-- Global error handler
-- User-friendly error messages
-- Retry logic for network errors
+**Error Response Format (FastAPI):**
+```typescript
+interface ErrorResponse {
+  detail: string; // Error message from backend
+}
+```
+
+**HTTP Status Codes:**
+| Code | Meaning | Example |
+| ---- | ------- | ------- |
+| 400  | Bad Request | "User with this email already exists" |
+| 401  | Unauthorized | "Invalid credentials" |
+| 404  | Not Found | "Question not found" |
+| 500  | Server Error | Internal error |
+
+**Frontend Handling:**
+- Global `ErrorInterceptor` для відображення помилок
+- Redirect на `/auth/login` при 401
+- User-friendly повідомлення через `NotificationService`
 
 ---
 
-# 16) TODO / Open Questions
+# 18) Resolved Questions
 
-> Ці питання потребують уточнення від бекенду:
+✅ **Answer validation endpoint** — реалізовано:
+- Endpoint: `GET /api/quizz/:quizzId/answers/validate/:questionId/:answerId`
+- Відповідь: `{ is_correct, description, valid_description }`
 
-1. **Answer validation endpoint** — потрібен endpoint для валідації відповіді:
+✅ **Explanation fields** — реалізовано:
+- `description` — пояснення неправильної відповіді
+- `valid_description` — пояснення правильної відповіді
 
-   - Запит: `{ quizId, questionId, optionId }`
-   - Відповідь: `{ isCorrect, correctOptionId, explanation }`
-2. **Explanation field** — чи є поле `explanation` у питаннях? Якщо так, де?
-3. **Answer connection** — як відповіді прив'язані до питань? Потрібен endpoint:
+✅ **Answer connection** — реалізовано:
+- Відповіді отримуються через: `GET /api/quizz/:quizzId/answers`
+- Питання отримуються через: `GET /api/quizz/:quizzId/questions`
+- Зв'язок: питання → відповіді через `question_id` у моделі
 
-   - `/admin/quizz/:id/questions/:questionId/answers`
-4. **Quiz status** — чи є статус квіза (pending/processing/completed)?
-5. **User roles** — чи є роль admin для delete операцій?
+✅ **Quiz creation** — реалізовано:
+- Квізи створюються з YouTube URL
+- AI автоматично генерує питання та відповіді
+- Можна редагувати після створення
+
+✅ **Public API** — реалізовано:
+- Всі endpoints доступні через `/api/quizz` (без `/admin`)
+- Контроль доступу на бекенді
