@@ -7,130 +7,130 @@
 ## Phase 1: Project Setup & Configuration
 
 ### 1.1 Ініціалізація проекту
-- [ ] Створити новий Angular проект (`ng new quiz-app --style=scss --routing`)
-- [ ] Налаштувати strict mode в `tsconfig.json`
-- [ ] Встановити Angular Material (`ng add @angular/material`)
-- [ ] Встановити @ngx-translate (`npm install @ngx-translate/core @ngx-translate/http-loader`)
+- [x] Створити новий Angular проект (`ng new quiz-app --style=scss --routing`)
+- [x] Налаштувати strict mode в `tsconfig.json`
+- [x] Встановити Angular Material (`ng add @angular/material`)
+- [x] Встановити @ngx-translate (`npm install @ngx-translate/core @ngx-translate/http-loader`)
 
 ### 1.2 Конфігурація середовища
-- [ ] Створити `proxy.conf.json` для API proxy
-- [ ] Налаштувати `environment.ts` з apiBasePath та мовами
-- [ ] Налаштувати `environment.prod.ts`
-- [ ] Додати proxy до `angular.json` (serve → proxyConfig)
+- [x] Створити `proxy.conf.json` для API proxy
+- [x] Налаштувати `environment.ts` з apiBasePath та мовами
+- [x] Налаштувати `environment.prod.ts`
+- [x] Додати proxy до `angular.json` (serve → proxyConfig)
 
 ### 1.3 Базова структура проекту
-- [ ] Створити папку `core/` (services, interceptors, guards, models)
-- [ ] Створити папку `features/` (auth, landing, quizzes, run)
-- [ ] Створити папку `shared/` (components, pipes)
-- [ ] Створити папку `persistence/` (IndexedDB repositories)
+- [x] Створити папку `core/` (services, interceptors, guards, models)
+- [x] Створити папку `features/` (auth, landing, quizzes, run)
+- [x] Створити папку `shared/` (components, pipes)
+- [x] Створити папку `persistence/` (IndexedDB repositories)
 
 ---
 
 ## Phase 2: Core Layer
 
 ### 2.1 Models (Types/Interfaces)
-- [ ] Створити `core/models/auth.models.ts` (LoginRequestDto, RegisterRequestDto, ProfileDto, etc.)
-- [ ] Створити `core/models/quiz.models.ts` (QuizzDto, QuestionDto, AnswerDto, etc.)
-- [ ] Створити `core/models/attempt.models.ts` (AttemptLocal, AttemptAnswerLocal, QuizStatsLocal)
+- [x] Створити `core/models/auth.models.ts` (LoginRequestDto, RegisterRequestDto, ProfileDto, etc.)
+- [x] Створити `core/models/quiz.models.ts` (QuizzDto, QuestionDto, AnswerDto, etc.)
+- [x] Створити `core/models/attempt.models.ts` (AttemptLocal, AttemptAnswerLocal, QuizStatsLocal)
 
 ### 2.2 Core Services
-- [ ] Створити `core/services/auth.service.ts`
-  - [ ] Реалізувати `currentUser` signal
-  - [ ] Реалізувати `isAuthenticated` computed
-  - [ ] Реалізувати `login()` method
-  - [ ] Реалізувати `register()` method
-  - [ ] Реалізувати `logout()` method
-  - [ ] Реалізувати `getProfile()` method
-  - [ ] Реалізувати `updateProfile()` method
-  - [ ] Реалізувати `changePassword()` method
+- [x] Створити `core/services/auth.service.ts`
+  - [x] Реалізувати `currentUser` signal
+  - [x] Реалізувати `isAuthenticated` computed
+  - [x] Реалізувати `login()` method
+  - [x] Реалізувати `register()` method
+  - [x] Реалізувати `logout()` method
+  - [x] Реалізувати `getProfile()` method
+  - [x] Реалізувати `updateProfile()` method
+  - [x] Реалізувати `changePassword()` method
 
-- [ ] Створити `core/services/quiz.service.ts`
-  - [ ] Реалізувати CRUD для quizzes
-  - [ ] Реалізувати CRUD для questions
-  - [ ] Реалізувати CRUD для answers
-  - [ ] Реалізувати `validateAnswer()` method
+- [x] Створити `core/services/quiz.service.ts`
+  - [x] Реалізувати CRUD для quizzes
+  - [x] Реалізувати CRUD для questions
+  - [x] Реалізувати CRUD для answers
+  - [x] Реалізувати `validateAnswer()` method
 
-- [ ] Створити `core/services/notification.service.ts`
-  - [ ] Реалізувати `success()` method
-  - [ ] Реалізувати `error()` method
-  - [ ] Реалізувати `info()` method
+- [x] Створити `core/services/notification.service.ts`
+  - [x] Реалізувати `success()` method
+  - [x] Реалізувати `error()` method
+  - [x] Реалізувати `info()` method
 
-- [ ] Створити `core/services/i18n.service.ts`
-  - [ ] Реалізувати `currentLang` signal
-  - [ ] Реалізувати `setLanguage()` method
-  - [ ] Реалізувати RTL support для Hebrew
+- [x] Створити `core/services/i18n.service.ts`
+  - [x] Реалізувати `currentLang` signal
+  - [x] Реалізувати `setLanguage()` method
+  - [x] Реалізувати RTL support для Hebrew
 
 ### 2.3 Interceptors
-- [ ] Створити `core/interceptors/auth.interceptor.ts`
-  - [ ] Додати `withCredentials: true` для API запитів
+- [x] Створити `core/interceptors/auth.interceptor.ts`
+  - [x] Додати `withCredentials: true` для API запитів
 
-- [ ] Створити `core/interceptors/error.interceptor.ts`
-  - [ ] Обробка 401 → redirect на login
-  - [ ] Показ помилок через NotificationService
+- [x] Створити `core/interceptors/error.interceptor.ts`
+  - [x] Обробка 401 → redirect на login
+  - [x] Показ помилок через NotificationService
 
 ### 2.4 Guards
-- [ ] Створити `core/guards/auth.guard.ts`
-  - [ ] Перевірка `isAuthenticated()`
-  - [ ] Redirect на login з `returnUrl`
+- [x] Створити `core/guards/auth.guard.ts`
+  - [x] Перевірка `isAuthenticated()`
+  - [x] Redirect на login з `returnUrl`
 
 ### 2.5 App Configuration
-- [ ] Налаштувати `app.config.ts`
-  - [ ] provideHttpClient з withInterceptors
-  - [ ] TranslateModule.forRoot
-  - [ ] provideRouter
+- [x] Налаштувати `app.config.ts`
+  - [x] provideHttpClient з withInterceptors
+  - [x] TranslateModule.forRoot
+  - [x] provideRouter
 
-- [ ] Налаштувати `app.routes.ts`
-  - [ ] Public routes (landing, auth)
-  - [ ] Protected routes з authGuard
+- [x] Налаштувати `app.routes.ts`
+  - [x] Public routes (landing, auth)
+  - [x] Protected routes з authGuard
 
 ---
 
 ## Phase 3: Persistence Layer (IndexedDB)
 
 ### 3.1 IndexedDB Provider
-- [ ] Створити `persistence/indexed-db.provider.ts`
-  - [ ] Ініціалізація DB `quiz_app_db`
-  - [ ] Створення object stores (attempts, quiz_stats, app_state)
-  - [ ] Створення indexes
+- [x] Створити `persistence/indexed-db.provider.ts`
+  - [x] Ініціалізація DB `quiz_app_db`
+  - [x] Створення object stores (attempts, quiz_stats, app_state)
+  - [x] Створення indexes
 
 ### 3.2 Repositories
-- [ ] Створити `persistence/attempt.repository.ts`
-  - [ ] `createAttempt()`
-  - [ ] `getAttempt()`
-  - [ ] `appendAnswer()`
-  - [ ] `finishAttempt()`
-  - [ ] `listAttemptsByQuiz()`
-  - [ ] `deleteAttempt()`
+- [x] Створити `persistence/attempt.repository.ts`
+  - [x] `createAttempt()`
+  - [x] `getAttempt()`
+  - [x] `appendAnswer()`
+  - [x] `finishAttempt()`
+  - [x] `listAttemptsByQuiz()`
+  - [x] `deleteAttempt()`
 
-- [ ] Створити `persistence/quiz-stats.repository.ts`
-  - [ ] `getStats()`
-  - [ ] `updateAfterAttempt()`
+- [x] Створити `persistence/quiz-stats.repository.ts`
+  - [x] `getStats()`
+  - [x] `updateAfterAttempt()`
 
-- [ ] Створити `persistence/app-state.repository.ts`
-  - [ ] `setActiveAttempt()`
-  - [ ] `getActiveAttempt()`
-  - [ ] `clearActiveAttempt()`
+- [x] Створити `persistence/app-state.repository.ts`
+  - [x] `setActiveAttempt()`
+  - [x] `getActiveAttempt()`
+  - [x] `clearActiveAttempt()`
 
 ---
 
 ## Phase 4: Shared Components
 
 ### 4.1 Header Component
-- [ ] Створити `shared/components/header/header.component.ts`
-  - [ ] Logo
+- [x] Створити `shared/components/header/header.component.ts`
+  - [x] Logo
   - [ ] Navigation links
-  - [ ] User menu (profile, logout)
-  - [ ] Language switch
+  - [x] User menu (profile, logout)
+  - [x] Language switch
 
 ### 4.2 Language Switch Component
-- [ ] Створити `shared/components/language-switch/language-switch.component.ts`
-  - [ ] Dropdown з мовами (uk, en, he)
-  - [ ] Зберігання вибору в localStorage
+- [x] Створити `shared/components/language-switch/language-switch.component.ts`
+  - [x] Dropdown з мовами (uk, en, he)
+  - [x] Зберігання вибору в localStorage
 
 ### 4.3 Confirm Dialog Component
-- [ ] Створити `shared/components/confirm-dialog/confirm-dialog.component.ts`
-  - [ ] Title, message
-  - [ ] Confirm/Cancel buttons
+- [x] Створити `shared/components/confirm-dialog/confirm-dialog.component.ts`
+  - [x] Title, message
+  - [x] Confirm/Cancel buttons
 
 ### 4.4 Loading Spinner Component
 - [ ] Створити `shared/components/loading-spinner/loading-spinner.component.ts`
@@ -144,79 +144,79 @@
 ## Phase 5: i18n (Translations)
 
 ### 5.1 Translation Files
-- [ ] Створити `assets/i18n/uk.json` (українська)
-- [ ] Створити `assets/i18n/en.json` (English)
-- [ ] Створити `assets/i18n/he.json` (עברית)
+- [x] Створити `assets/i18n/uk.json` (українська)
+- [x] Створити `assets/i18n/en.json` (English)
+- [x] Створити `assets/i18n/he.json` (עברית)
 
 ### 5.2 RTL Styles
-- [ ] Додати RTL styles в `styles.scss`
+- [x] Додати RTL styles в `styles.scss`
 
 ---
 
 ## Phase 6: Feature - Landing
 
 ### 6.1 Landing Component
-- [ ] Створити `features/landing/landing.component.ts`
-  - [ ] Hero section з описом продукту
-  - [ ] CTA buttons (Login, Register)
-  - [ ] Умовне відображення "Go to App" якщо authenticated
-  - [ ] Responsive design
+- [x] Створити `features/landing/landing.component.ts`
+  - [x] Hero section з описом продукту
+  - [x] CTA buttons (Login, Register)
+  - [x] Умовне відображення "Go to App" якщо authenticated
+  - [ ] Responsive design (потребує покращення)
 
 ---
 
 ## Phase 7: Feature - Auth
 
 ### 7.1 Login Component
-- [ ] Створити `features/auth/login/login.component.ts`
-  - [ ] Reactive form (email, password)
-  - [ ] Валідація полів
-  - [ ] Submit → AuthService.login()
-  - [ ] Error handling та display
-  - [ ] Link to Register
-  - [ ] Redirect після успіху
+- [x] Створити `features/auth/login/login.component.ts`
+  - [x] Reactive form (email, password)
+  - [x] Валідація полів
+  - [x] Submit → AuthService.login()
+  - [x] Error handling та display
+  - [x] Link to Register
+  - [x] Redirect після успіху
 
 ### 7.2 Register Component
-- [ ] Створити `features/auth/register/register.component.ts`
-  - [ ] Reactive form (name, surname, email, password, confirmPassword)
-  - [ ] Валідація полів
-  - [ ] Валідація password === confirmPassword
-  - [ ] Submit → AuthService.register()
-  - [ ] Error handling
-  - [ ] Redirect на login після успіху
+- [x] Створити `features/auth/register/register.component.ts`
+  - [x] Reactive form (name, surname, email, password, confirmPassword)
+  - [x] Валідація полів
+  - [x] Валідація password === confirmPassword
+  - [x] Submit → AuthService.register()
+  - [x] Error handling
+  - [x] Redirect на login після успіху
 
 ### 7.3 Profile Component
-- [ ] Створити `features/auth/profile/profile.component.ts`
-  - [ ] Display profile data
-  - [ ] Edit form (name, surname)
-  - [ ] Change password form
-  - [ ] Logout button
+- [x] Створити `features/auth/profile/profile.component.ts`
+  - [x] Display profile data
+  - [x] Edit form (name, surname)
+  - [x] Change password form
+  - [x] Logout button
 
 ---
 
 ## Phase 8: Feature - Quizzes
 
 ### 8.1 Quiz List Component
-- [ ] Створити `features/quizzes/quiz-list/quiz-list.component.ts`
-  - [ ] Table з квізами (name, description, questions_count, created_at)
-  - [ ] Actions (Edit, Run, Delete)
-  - [ ] Search input (filter by name)
-  - [ ] Create button
-  - [ ] Loading state
-  - [ ] Empty state
-  - [ ] Delete confirmation dialog
+- [x] Створити `features/quizzes/quiz-list/quiz-list.component.ts`
+  - [x] Table з квізами (name, description, questions_count, created_at)
+  - [x] Actions (Edit, Run, Delete)
+  - [x] Search input (filter by name)
+  - [x] Create button
+  - [x] Loading state
+  - [x] Empty state
+  - [x] Delete confirmation dialog
 
 ### 8.2 Quiz Create Component
-- [ ] Створити `features/quizzes/quiz-create/quiz-create.component.ts`
-  - [ ] Form з YouTube URL input
-  - [ ] URL validation (YouTube pattern)
-  - [ ] Submit → QuizService.createQuiz()
-  - [ ] Loading state під час AI генерації
-  - [ ] Success → redirect на list
+- [x] Створити `features/quizzes/quiz-create/quiz-create.component.ts`
+  - [x] Form з YouTube URL input
+  - [x] URL validation (YouTube pattern)
+  - [x] Submit → QuizService.createQuiz()
+  - [x] Loading state під час AI генерації
+  - [x] Success → redirect на list
 
 ### 8.3 Quiz Edit Component
-- [ ] Створити `features/quizzes/quiz-edit/quiz-edit.component.ts`
-  - [ ] Load quiz data
-  - [ ] Edit name, description
+- [x] Створити `features/quizzes/quiz-edit/quiz-edit.component.ts`
+  - [x] Load quiz data
+  - [x] Edit name, description
   - [ ] Questions list (accordion/cards)
     - [ ] Edit question text
     - [ ] Delete question
@@ -227,8 +227,8 @@
     - [ ] Edit description/valid_description
     - [ ] Delete answer
     - [ ] Add answer
-  - [ ] Save all changes
-  - [ ] Loading states
+  - [x] Save all changes
+  - [x] Loading states
   - [ ] Confirmation dialogs для delete
 
 ---
@@ -236,42 +236,42 @@
 ## Phase 9: Feature - Quiz Run
 
 ### 9.1 Run Start Component
-- [ ] Створити `features/run/run-start/run-start.component.ts`
-  - [ ] Display quiz name, questions count
-  - [ ] Start button
+- [x] Створити `features/run/run-start/run-start.component.ts`
+  - [x] Display quiz name, questions count
+  - [x] Start button
   - [ ] Continue / Start New (якщо є незавершена спроба)
-  - [ ] Load quiz + questions
-  - [ ] Shuffle questions (Fisher-Yates)
-  - [ ] Create attempt в IndexedDB
-  - [ ] Navigate до першого питання
+  - [x] Load quiz + questions
+  - [x] Shuffle questions (Fisher-Yates)
+  - [x] Create attempt в IndexedDB
+  - [x] Navigate до першого питання
 
 ### 9.2 Question Component
-- [ ] Створити `features/run/question/question.component.ts`
-  - [ ] Display question text
-  - [ ] Radio group з відповідями
-  - [ ] Progress indicator (index / total)
-  - [ ] Submit button (disabled without selection)
-  - [ ] Submit → validateAnswer API
-  - [ ] Save answer → IndexedDB
-  - [ ] Navigate to feedback
+- [x] Створити `features/run/question/question.component.ts`
+  - [x] Display question text
+  - [x] Radio group з відповідями
+  - [x] Progress indicator (index / total)
+  - [x] Submit button (disabled without selection)
+  - [x] Submit → validateAnswer API
+  - [x] Save answer → IndexedDB
+  - [x] Navigate to feedback
 
 ### 9.3 Feedback Component
-- [ ] Створити `features/run/feedback/feedback.component.ts`
-  - [ ] Correct / Incorrect badge
+- [x] Створити `features/run/feedback/feedback.component.ts`
+  - [x] Correct / Incorrect badge
   - [ ] Selected answer
   - [ ] Correct answer (якщо incorrect)
   - [ ] Explanation (description / valid_description)
-  - [ ] Next / Finish button
-  - [ ] Navigate to next question or results
+  - [x] Next / Finish button
+  - [x] Navigate to next question or results
 
 ### 9.4 Results Component
-- [ ] Створити `features/run/results/results.component.ts`
-  - [ ] Score display (count, percentage)
+- [x] Створити `features/run/results/results.component.ts`
+  - [x] Score display (count, percentage)
   - [ ] Questions summary list
-  - [ ] Finish attempt → IndexedDB
-  - [ ] Update stats → IndexedDB
-  - [ ] Retry button
-  - [ ] Back to list button
+  - [x] Finish attempt → IndexedDB
+  - [x] Update stats → IndexedDB
+  - [x] Retry button
+  - [x] Back to list button
 
 ### 9.5 Run Service
 - [ ] Створити `features/run/services/run.service.ts`
@@ -284,9 +284,9 @@
 ## Phase 10: App Shell
 
 ### 10.1 App Component
-- [ ] Налаштувати `app.component.ts`
-  - [ ] Router outlet
-  - [ ] Header integration
+- [x] Налаштувати `app.component.ts`
+  - [x] Router outlet
+  - [x] Header integration
   - [ ] Global error handling
 
 ---

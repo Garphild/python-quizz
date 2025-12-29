@@ -1,0 +1,44 @@
+{
+  "COMMON": {
+    "SAVE": "שמור",
+    "CANCEL": "ביטול",
+    "DELETE": "מחק",
+    "EDIT": "עריכה",
+    "LOADING": "טוען...",
+    "NO_DATA": "אין נתונים",
+    "CONFIRM_DELETE": "אישור מחיקה",
+    "DELETE_CONFIRM_MESSAGE": "האם אתה בטוח שברצונך למחוק?"
+  },
+  "AUTH": {
+    "LOGIN": "התחברות",
+    "REGISTER": "הרשמה",
+    "LOGOUT": "התנתקות",
+    "EMAIL": "דוא\"ל",
+    "PASSWORD": "סיסמה",
+    "NAME": "שם",
+    "SURNAME": "שם משפחה",
+    "CONFIRM_PASSWORD": "אישור סיסמה",
+    "OLD_PASSWORD": "סיסמה ישנה",
+    "NEW_PASSWORD": "סיסמה חדשה",
+    "PROFILE": "פרופיל"
+  },
+  "ERRORS": {
+    "REQUIRED": "שדה זה נדרש",
+    "INVALID_EMAIL": "פורמט דוא\"ל לא חוקי",
+    "MIN_LENGTH": "מינימום {{min}} תווים",
+    "MAX_LENGTH": "מקסימום {{max}} תווים",
+    "INVALID_FORMAT": "פורמט לא חוקי",
+    "PASSWORDS_MISMATCH": "הסיסמאות אינן תואמות"
+  },
+  "QUIZ": {
+    "LIST_TITLE": "החידונים שלי",
+    "CREATE": "צור חידון",
+    "QUESTIONS": "שאלות",
+    "RUN": "התחל",
+    "EDIT": "עריכה",
+    "DELETE": "מחק",
+    "YOUTUBE_URL": "כתובת YouTube",
+    "DESCRIPTION": "תיאור",
+    "QUESTIONS_COUNT": "מספר שאלות"
+  }
+}

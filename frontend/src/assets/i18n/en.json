@@ -1,0 +1,44 @@
+{
+  "COMMON": {
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "EDIT": "Edit",
+    "LOADING": "Loading...",
+    "NO_DATA": "No data",
+    "CONFIRM_DELETE": "Confirm Delete",
+    "DELETE_CONFIRM_MESSAGE": "Are you sure you want to delete?"
+  },
+  "AUTH": {
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "LOGOUT": "Logout",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "NAME": "Name",
+    "SURNAME": "Surname",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "OLD_PASSWORD": "Old Password",
+    "NEW_PASSWORD": "New Password",
+    "PROFILE": "Profile"
+  },
+  "ERRORS": {
+    "REQUIRED": "This field is required",
+    "INVALID_EMAIL": "Invalid email format",
+    "MIN_LENGTH": "Minimum {{min}} characters",
+    "MAX_LENGTH": "Maximum {{max}} characters",
+    "INVALID_FORMAT": "Invalid format",
+    "PASSWORDS_MISMATCH": "Passwords do not match"
+  },
+  "QUIZ": {
+    "LIST_TITLE": "My Quizzes",
+    "CREATE": "Create Quiz",
+    "QUESTIONS": "Questions",
+    "RUN": "Start",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "YOUTUBE_URL": "YouTube URL",
+    "DESCRIPTION": "Description",
+    "QUESTIONS_COUNT": "Number of Questions"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "COMMON": {
+    "SAVE": "Зберегти",
+    "CANCEL": "Скасувати",
+    "DELETE": "Видалити",
+    "EDIT": "Редагувати",
+    "LOADING": "Завантаження...",
+    "NO_DATA": "Немає даних",
+    "CONFIRM_DELETE": "Підтвердити видалення",
+    "DELETE_CONFIRM_MESSAGE": "Ви впевнені, що хочете видалити?"
+  },
+  "AUTH": {
+    "LOGIN": "Увійти",
+    "REGISTER": "Реєстрація",
+    "LOGOUT": "Вийти",
+    "EMAIL": "Email",
+    "PASSWORD": "Пароль",
+    "NAME": "Ім'я",
+    "SURNAME": "Прізвище",
+    "CONFIRM_PASSWORD": "Підтвердити пароль",
+    "OLD_PASSWORD": "Старий пароль",
+    "NEW_PASSWORD": "Новий пароль",
+    "PROFILE": "Профіль"
+  },
+  "ERRORS": {
+    "REQUIRED": "Обов'язкове поле",
+    "INVALID_EMAIL": "Невірний формат email",
+    "MIN_LENGTH": "Мінімум {{min}} символів",
+    "MAX_LENGTH": "Максимум {{max}} символів",
+    "INVALID_FORMAT": "Невірний формат",
+    "PASSWORDS_MISMATCH": "Паролі не співпадають"
+  },
+  "QUIZ": {
+    "LIST_TITLE": "Мої квізи",
+    "CREATE": "Створити квіз",
+    "QUESTIONS": "Питання",
+    "RUN": "Почати",
+    "EDIT": "Редагувати",
+    "DELETE": "Видалити",
+    "YOUTUBE_URL": "YouTube URL",
+    "DESCRIPTION": "Опис",
+    "QUESTIONS_COUNT": "Кількість питань"
+  }
+}
