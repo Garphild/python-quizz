@@ -1,14 +1,20 @@
 from typing import Optional
-from entities.questions import Question
 from datetime import datetime
 from pydantic import BaseModel
 
-class Quizz:
+class AdminQuizzDto(BaseModel):
     id: int
     name: str
     description: str
-    questions: Optional[list[Question]] = None
+    questions_count: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
 
+class CreateQuizzDto(BaseModel):
+    name: str
+    description: str
+
+class UpdateQuizzDto(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None

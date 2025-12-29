@@ -1,7 +1,6 @@
-from fastapi import APIRouter
+from entities.user import PublicUser
+from fastapi import APIRouter, Body, HTTPException
+from typing import Annotated
+from routes.auth.dto.auth_dto import RegisterRequest
+from services.user_service import UserService
 
-router = APIRouter()
-
-@router.post("/auth/register")
-async def post_register():
-    return {"message": "register"}
