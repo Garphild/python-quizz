@@ -72,7 +72,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
           <mat-icon>school</mat-icon>
           <h3>{{ 'QUIZ.NO_QUIZZES' | translate }}</h3>
           <p>{{ 'QUIZ.CREATE_FIRST' | translate }}</p>
-          <button mat-raised-button color="primary" routerLink="/app/quizzes/new">
+          <button mat-raised-button color="primary" routerLink="/app/quizzes/new" class="create-btn">
             <mat-icon>add</mat-icon>
             {{ 'QUIZ.CREATE' | translate }}
           </button>
@@ -156,11 +156,6 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
       margin: 0;
     }
 
-    .create-btn {
-      padding: var(--spacing-3) var(--spacing-6) !important;
-      border-radius: var(--radius-full) !important;
-    }
-
     .search-section {
       display: flex;
       align-items: center;
@@ -196,12 +191,15 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
       box-shadow: var(--shadow-sm);
     }
 
-    .empty-state mat-icon {
+    .empty-state > mat-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;
       color: var(--color-text-secondary);
       margin-bottom: var(--spacing-6);
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .empty-state h3 {

@@ -8,11 +8,11 @@ quizz_router = APIRouter(prefix="/api/quizz", tags=["quizz"])
 
 @quizz_router.get("/", description="Get all available quizz")
 async def get_quizz() -> list[QuizzDto]:
-    return quizzService.get_all()
+    return await quizzService.get_all()
 
 @quizz_router.get("/{quizz_id}", description="Get quizz by id")
 async def get_quizz(quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])]) -> QuizzDto:
-    return quizzService.get_by_id(quizz_id)
+    return await quizzService.get_by_id(quizz_id)
 
 @quizz_router.post("/", description="Create new quizz")
 async def create_quizz(
@@ -21,7 +21,7 @@ async def create_quizz(
         Body(description="Quizz data", examples=[{"url": "https://www.youtube.com/watch?v=example"}])
     ]
 ) -> QuizzDto:
-    return quizzService.create(quizz)
+    return await quizzService.create(quizz)
 
 @quizz_router.put("/{quizz_id}", description="Update quizz by id")
 async def update_quizz(
@@ -34,7 +34,7 @@ async def update_quizz(
         Body(description="Quizz data", examples=[{"name": "Quizz name", "description": "Quizz description"}])
     ]
 ) -> QuizzDto:
-    return quizzService.update(quizz_id, quizz)
+    return await quizzService.update(quizz_id, quizz)
 
 @quizz_router.delete("/{quizz_id}", description="Delete quizz by id")
 async def delete_quizz(
@@ -43,4 +43,4 @@ async def delete_quizz(
         Path(description="Quizz ID", examples=[1])
     ]
 ) -> bool:
-    return quizzService.delete(quizz_id)
+    return await quizzService.delete(quizz_id)

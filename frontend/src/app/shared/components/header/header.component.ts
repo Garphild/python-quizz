@@ -87,19 +87,27 @@ import { LanguageSwitchComponent } from '../language-switch/language-switch.comp
       align-items: center;
       gap: var(--spacing-2);
       text-decoration: none;
-      color: white;
+      color: var(--color-primary);
+      font-weight: var(--font-weight-bold);
+      transition: opacity var(--transition-fast);
+    }
+
+    .logo:hover {
+      opacity: 0.8;
     }
 
     .logo-icon {
       font-size: 28px;
       width: 28px;
       height: 28px;
+      color: var(--color-primary);
     }
 
     .logo-text {
       font-size: var(--font-size-h4);
       font-weight: var(--font-weight-bold);
       letter-spacing: 0.5px;
+      color: var(--color-primary);
     }
 
     .spacer {
@@ -113,18 +121,20 @@ import { LanguageSwitchComponent } from '../language-switch/language-switch.comp
     }
 
     .nav-links a {
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--color-primary);
       transition: all var(--transition-fast);
+      font-weight: 500;
     }
 
     .nav-links a:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-primary-dark);
+      background: rgba(25, 118, 210, 0.08);
     }
 
     .nav-links a.active {
-      color: white;
-      background: rgba(255, 255, 255, 0.15);
+      color: var(--color-primary-dark);
+      background: rgba(25, 118, 210, 0.12);
+      border-bottom: 2px solid var(--color-primary);
     }
 
     .nav-links mat-icon {
