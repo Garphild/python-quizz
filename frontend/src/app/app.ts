@@ -9,7 +9,9 @@ import { I18nService } from './core/services/i18n.service';
   imports: [RouterOutlet, HeaderComponent],
   template: `
     <app-header></app-header>
-    <router-outlet></router-outlet>
+    <main role="main">
+      <router-outlet></router-outlet>
+    </main>
   `,
   styles: [`
     :host {

@@ -1,12 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private snackBar = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   success(message: string, duration: number = 3000): void {
-    this.snackBar.open(message, 'Close', {
+    const translatedMessage = this.translate.instant(message);
+    const closeText = this.translate.instant('COMMON.CLOSE');
+    this.snackBar.open(translatedMessage, closeText, {
       duration,
       horizontalPosition: 'end',
       verticalPosition: 'bottom',
@@ -15,7 +19,9 @@ export class NotificationService {
   }
 
   error(message: string, duration: number = 5000): void {
-    this.snackBar.open(message, 'Close', {
+    const translatedMessage = this.translate.instant(message);
+    const closeText = this.translate.instant('COMMON.CLOSE');
+    this.snackBar.open(translatedMessage, closeText, {
       duration,
       horizontalPosition: 'end',
       verticalPosition: 'bottom',
@@ -24,7 +30,9 @@ export class NotificationService {
   }
 
   info(message: string, duration: number = 3000): void {
-    this.snackBar.open(message, 'Close', {
+    const translatedMessage = this.translate.instant(message);
+    const closeText = this.translate.instant('COMMON.CLOSE');
+    this.snackBar.open(translatedMessage, closeText, {
       duration,
       horizontalPosition: 'end',
       verticalPosition: 'bottom',

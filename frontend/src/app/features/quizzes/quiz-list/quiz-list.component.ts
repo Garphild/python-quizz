@@ -38,7 +38,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
             <mat-icon>quiz</mat-icon>
             {{ 'QUIZ.LIST_TITLE' | translate }}
           </h1>
-          <p>Manage your quizzes and track your learning progress</p>
+          <p>{{ 'QUIZ.LIST_SUBTITLE' | translate }}</p>
         </div>
         <button mat-raised-button color="primary" routerLink="/app/quizzes/new" class="create-btn">
           <mat-icon>add</mat-icon>
@@ -50,7 +50,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput [formControl]="searchControl" placeholder="Search by quiz name...">
+          <input matInput [formControl]="searchControl" [placeholder]="'QUIZ.SEARCH_PLACEHOLDER' | translate">
           @if (searchControl.value) {
             <button matSuffix mat-icon-button (click)="searchControl.setValue('')">
               <mat-icon>close</mat-icon>
@@ -65,23 +65,23 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
       @if (isLoading()) {
         <div class="loading-container">
           <mat-spinner diameter="48"></mat-spinner>
-          <p>Loading quizzes...</p>
+          <p>{{ 'COMMON.LOADING' | translate }}</p>
         </div>
       } @else if (filteredQuizzes().length === 0 && !searchControl.value) {
         <div class="empty-state">
           <mat-icon>school</mat-icon>
-          <h3>No quizzes yet</h3>
-          <p>Create your first quiz from a YouTube video</p>
+          <h3>{{ 'QUIZ.NO_QUIZZES' | translate }}</h3>
+          <p>{{ 'QUIZ.CREATE_FIRST' | translate }}</p>
           <button mat-raised-button color="primary" routerLink="/app/quizzes/new">
             <mat-icon>add</mat-icon>
-            Create Your First Quiz
+            {{ 'QUIZ.CREATE' | translate }}
           </button>
         </div>
       } @else if (filteredQuizzes().length === 0) {
         <div class="empty-state">
           <mat-icon>search_off</mat-icon>
-          <h3>No results found</h3>
-          <p>Try a different search term</p>
+          <h3>{{ 'QUIZ.NO_RESULTS' | translate }}</h3>
+          <p>{{ 'QUIZ.TRY_DIFFERENT' | translate }}</p>
         </div>
       } @else {
         <div class="quiz-grid">
@@ -95,7 +95,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
                   <h3>{{ quiz.name }}</h3>
                   <span class="question-count">
                     <mat-icon>help_outline</mat-icon>
-                    {{ quiz.questions_count }} questions
+                    {{ quiz.questions_count }} {{ 'QUIZ.QUESTIONS' | translate }}
                   </span>
                 </div>
               </div>

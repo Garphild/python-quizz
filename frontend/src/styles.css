@@ -26,7 +26,7 @@
   --color-background: #F5F5F5;
   --color-surface: #FFFFFF;
   --color-text-primary: #212121;
-  --color-text-secondary: #757575;
+  --color-text-secondary: #5f6368;
   --color-divider: #E0E0E0;
   --color-disabled: #9E9E9E;
 
@@ -145,6 +145,27 @@ a:hover {
   width: 100%;
 }
 
+/* Form field padding fix */
+.mat-mdc-form-field-infix {
+  padding: 0.5rem 0 !important;
+  min-height: 40px !important;
+}
+
+.mat-mdc-text-field-wrapper {
+  padding: 0 12px !important;
+}
+
+/* Validation error styling */
+.mat-mdc-form-field-error {
+  color: var(--color-error) !important;
+  font-size: var(--font-size-caption) !important;
+}
+
+mat-error {
+  color: var(--color-error) !important;
+  font-size: var(--font-size-caption) !important;
+}
+
 .mat-toolbar.mat-primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
@@ -194,6 +215,22 @@ a:hover {
 
 [dir="rtl"] .button-group {
   flex-direction: row-reverse;
+}
+
+[dir="rtl"] .submit-button mat-icon,
+[dir="rtl"] button mat-icon {
+  margin-right: 0;
+  margin-left: var(--spacing-2);
+}
+
+[dir="rtl"] mat-icon[matPrefix] {
+  margin-right: 0;
+  margin-left: var(--spacing-2);
+}
+
+[dir="rtl"] .auth-link a {
+  margin-left: 0;
+  margin-right: var(--spacing-1);
 }
 
 /* Accessibility - Focus States */

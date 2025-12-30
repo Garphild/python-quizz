@@ -29,7 +29,7 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
       @if (isLoading()) {
         <div class="loading-container">
           <mat-spinner diameter="48"></mat-spinner>
-          <p>Calculating results...</p>
+          <p>{{ 'RUN.CALCULATING' | translate }}</p>
         </div>
       } @else if (attempt()) {
         <div class="results-container slide-up">
@@ -48,7 +48,7 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
             </div>
             <div class="percentage-display">
               <span class="percentage-value">{{ percentage() }}%</span>
-              <span class="percentage-label">correct</span>
+              <span class="percentage-label">{{ 'RUN.CORRECT' | translate }}</span>
             </div>
             <mat-progress-bar 
               mode="determinate" 
@@ -60,11 +60,11 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
           <div class="action-buttons">
             <button mat-raised-button color="primary" (click)="onRetry()" class="action-btn">
               <mat-icon>replay</mat-icon>
-              Try Again
+              {{ 'RUN.TRY_AGAIN' | translate }}
             </button>
             <button mat-stroked-button (click)="onBackToList()" class="action-btn">
               <mat-icon>list</mat-icon>
-              Back to Quizzes
+              {{ 'RUN.BACK_TO_QUIZZES' | translate }}
             </button>
           </div>
         </div>

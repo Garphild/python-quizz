@@ -33,15 +33,15 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
       @if (isLoading()) {
         <div class="loading-container">
           <mat-spinner diameter="48"></mat-spinner>
-          <p>Loading question...</p>
+          <p>{{ 'COMMON.LOADING' | translate }}</p>
         </div>
       } @else if (attempt() && question() && answers()) {
         <div class="question-container slide-up">
           <!-- Progress Header -->
           <div class="progress-header">
             <div class="progress-info">
-              <span class="progress-label">Question</span>
-              <span class="progress-count">{{ currentIndex() + 1 }} of {{ attempt()!.questionOrder.length }}</span>
+              <span class="progress-label">{{ 'RUN.QUESTION' | translate }}</span>
+              <span class="progress-count">{{ currentIndex() + 1 }} {{ 'RUN.OF' | translate }} {{ attempt()!.questionOrder.length }}</span>
             </div>
             <mat-progress-bar 
               mode="determinate" 
@@ -53,7 +53,7 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
           <div class="question-card">
             <div class="question-number">
               <mat-icon>help_outline</mat-icon>
-              Question {{ currentIndex() + 1 }}
+              {{ 'RUN.QUESTION' | translate }} {{ currentIndex() + 1 }}
             </div>
             <h2 class="question-text">{{ question()!.text }}</h2>
             
@@ -79,8 +79,10 @@ import { AttemptLocal } from '../../../core/models/attempt.models';
               @if (isSubmitting()) {
                 <mat-spinner diameter="20"></mat-spinner>
               } @else {
-                <mat-icon>check_circle</mat-icon>
-                Submit Answer
+                <ng-container>
+                  <mat-icon>check_circle</mat-icon>
+                  {{ 'RUN.SUBMIT_ANSWER' | translate }}
+                </ng-container>
               }
             </button>
           </div>

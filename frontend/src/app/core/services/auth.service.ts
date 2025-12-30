@@ -15,8 +15,26 @@ export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiBasePath}/auth`;
 
-  currentUser = signal<ProfileDto | null>(null);
+  currentUser = signal<ProfileDto | null>(this.loadUserFromStorage());
   isAuthenticated = computed(() => !!this.currentUser());
+
+  private loadUserFromStorage(): ProfileDto | null {
+    try {
+      const stored = localStorage.getItem('currentUser');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  setCurrentUser(user: ProfileDto | null): void {
+    this.currentUser.set(user);
+    if (user) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
+  }
 
   login(credentials: LoginRequestDto): Observable<ProfileDto> {
     return this.http.post<ProfileDto>(`${this.apiUrl}/login`, credentials);

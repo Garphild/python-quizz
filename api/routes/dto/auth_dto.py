@@ -21,6 +21,8 @@ class RegisterRequestDto(BaseModel):
 Current User Profile DTOs
 """
 class ProfileDto(BaseModel):
+    model_config = {"from_attributes": True}
+    
     id: Annotated[int, Field(description="User ID")]
     email: Annotated[str, Field(description="User email")]
     name: Annotated[str, Field(description="User name")]

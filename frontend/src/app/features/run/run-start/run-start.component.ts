@@ -18,7 +18,7 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
       @if (isLoading() && !quiz()) {
         <div class="loading-container">
           <mat-spinner diameter="48"></mat-spinner>
-          <p>Loading quiz...</p>
+          <p>{{ 'COMMON.LOADING' | translate }}</p>
         </div>
       } @else if (quiz()) {
         <div class="run-start-container slide-up">
@@ -29,7 +29,7 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
 
           <!-- Quiz Info -->
           <h1>{{ quiz()!.name }}</h1>
-          <p class="quiz-description">{{ quiz()!.description || 'Test your knowledge!' }}</p>
+          <p class="quiz-description">{{ quiz()!.description || ('RUN.TEST_KNOWLEDGE' | translate) }}</p>
 
           <!-- Stats Card -->
           <div class="stats-card">
@@ -37,7 +37,7 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
               <mat-icon>help_outline</mat-icon>
               <div class="stat-info">
                 <span class="stat-value">{{ quiz()!.questions_count }}</span>
-                <span class="stat-label">Questions</span>
+                <span class="stat-label">{{ 'QUIZ.QUESTIONS' | translate }}</span>
               </div>
             </div>
             <div class="stat-divider"></div>
@@ -45,7 +45,7 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
               <mat-icon>timer</mat-icon>
               <div class="stat-info">
                 <span class="stat-value">~{{ estimatedTime() }}</span>
-                <span class="stat-label">Minutes</span>
+                <span class="stat-label">{{ 'RUN.MINUTES' | translate }}</span>
               </div>
             </div>
           </div>
@@ -54,12 +54,12 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
           <div class="tips-card">
             <h3>
               <mat-icon>lightbulb</mat-icon>
-              Quick Tips
+              {{ 'RUN.QUICK_TIPS' | translate }}
             </h3>
             <ul>
-              <li>Read each question carefully</li>
-              <li>You can't go back once you submit</li>
-              <li>Take your time - no rush!</li>
+              <li>{{ 'RUN.TIP_1' | translate }}</li>
+              <li>{{ 'RUN.TIP_2' | translate }}</li>
+              <li>{{ 'RUN.TIP_3' | translate }}</li>
             </ul>
           </div>
 
@@ -74,13 +74,15 @@ import { AppStateRepository } from '../../../persistence/app-state.repository';
               @if (isLoading()) {
                 <mat-spinner diameter="20"></mat-spinner>
               } @else {
-                <mat-icon>play_arrow</mat-icon>
-                Start Quiz
+                <ng-container>
+                  <mat-icon>play_arrow</mat-icon>
+                  {{ 'RUN.START_QUIZ' | translate }}
+                </ng-container>
               }
             </button>
             <button mat-stroked-button routerLink="/app/quizzes" class="back-btn">
               <mat-icon>arrow_back</mat-icon>
-              Back to Quizzes
+              {{ 'RUN.BACK_TO_QUIZZES' | translate }}
             </button>
           </div>
         </div>

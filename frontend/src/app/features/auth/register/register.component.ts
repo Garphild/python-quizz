@@ -35,7 +35,7 @@ import { NotificationService } from '../../../core/services/notification.service
             <mat-icon>person_add</mat-icon>
           </div>
           <h1>{{ 'AUTH.REGISTER' | translate }}</h1>
-          <p>Create your account to get started</p>
+          <p>{{ 'AUTH.CREATE_ACCOUNT' | translate }}</p>
         </div>
 
         <mat-card class="auth-card">
@@ -73,14 +73,14 @@ import { NotificationService } from '../../../core/services/notification.service
                 <mat-label>{{ 'AUTH.PASSWORD' | translate }}</mat-label>
                 <mat-icon matPrefix>lock</mat-icon>
                 <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="new-password">
-                <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
+                <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
                   <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
                 @if (form.get('password')?.hasError('required')) {
                   <mat-error>{{ 'ERRORS.REQUIRED' | translate }}</mat-error>
                 }
                 @if (form.get('password')?.hasError('minlength')) {
-                  <mat-error>Min 8 characters</mat-error>
+                  <mat-error>{{ 'ERRORS.MIN_LENGTH' | translate:{ min: 8 } }}</mat-error>
                 }
               </mat-form-field>
 
@@ -88,14 +88,14 @@ import { NotificationService } from '../../../core/services/notification.service
                 <mat-label>{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</mat-label>
                 <mat-icon matPrefix>lock_outline</mat-icon>
                 <input matInput [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password">
-                <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())">
+                <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
                   <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
                 @if (form.get('confirmPassword')?.hasError('required')) {
                   <mat-error>{{ 'ERRORS.REQUIRED' | translate }}</mat-error>
                 }
                 @if (form.hasError('passwordMismatch')) {
-                  <mat-error>Passwords do not match</mat-error>
+                  <mat-error>{{ 'ERRORS.PASSWORDS_MISMATCH' | translate }}</mat-error>
                 }
               </mat-form-field>
 
@@ -108,18 +108,20 @@ import { NotificationService } from '../../../core/services/notification.service
                 @if (isLoading()) {
                   <mat-spinner diameter="20"></mat-spinner>
                 } @else {
-                  <mat-icon>how_to_reg</mat-icon>
-                  {{ 'AUTH.REGISTER' | translate }}
+                  <ng-container>
+                    <mat-icon>how_to_reg</mat-icon>
+                    {{ 'AUTH.REGISTER' | translate }}
+                  </ng-container>
                 }
               </button>
             </form>
 
             <div class="auth-divider">
-              <span>or</span>
+              <span>{{ 'AUTH.OR' | translate }}</span>
             </div>
 
             <p class="auth-link">
-              Already have an account?
+              {{ 'AUTH.HAVE_ACCOUNT' | translate }}
               <a routerLink="/auth/login">{{ 'AUTH.LOGIN' | translate }}</a>
             </p>
           </mat-card-content>
@@ -127,7 +129,7 @@ import { NotificationService } from '../../../core/services/notification.service
 
         <a routerLink="/" class="back-link">
           <mat-icon>arrow_back</mat-icon>
-          Back to home
+          {{ 'AUTH.BACK_HOME' | translate }}
         </a>
       </div>
     </div>
@@ -321,10 +323,11 @@ export class RegisterComponent {
 
     this.authService.register(data).subscribe({
       next: () => {
-        this.notification.success('Registration successful. Please login.');
+        this.notification.success('NOTIFICATIONS.REGISTER_SUCCESS');
         this.router.navigate(['/auth/login']);
       },
       error: () => {
+        this.notification.error('NOTIFICATIONS.ERROR_OCCURRED');
         this.isLoading.set(false);
       }
     });

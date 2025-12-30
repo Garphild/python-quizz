@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, Response
 from typing import Annotated
 from routes.dto.auth_dto import ChangePasswordDto, RegisterRequestDto, ProfileDto, LoginRequestDto, UpdateProfileDto
 from services.user_service import user_service
@@ -42,6 +42,7 @@ async def post_register(
 
 @authRouter.post("/login")
 async def login(
+    response: Response,
     loginReq: Annotated[
         LoginRequestDto, 
         Body(
@@ -58,17 +59,20 @@ async def login(
         )
     ]
 ) -> ProfileDto:
-    user = await user_service.get_by_email(loginReq.email)
-    if not user:
+    profile = await user_service.verify_login(loginReq.email, loginReq.password)
+    if not profile:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    if not user.verify_password(loginReq.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = security.create_access_token(uid=str(user.id))
+    token = security.create_access_token(uid=str(profile.id))
+    response.set_cookie(
+        key="auth_token",
+        value=token,
+        httponly=True,
+        max_age=3600 * 24,
+        samesite="lax"
+    )
     
-    # Return a success response (token generation would go here)
-    return ProfileDto.validate_model(user)
+    return profile
 
 @authRouter.post("/logout")
 async def logout() -> bool:
@@ -82,7 +86,7 @@ async def get_profile() -> ProfileDto:
 
     user = await user_service.get_by_id(user_id)
 
-    return ProfileDto.validate_model(user)
+    return ProfileDto.model_validate(user)
 
 @authRouter.post("/change-password")
 async def change_password(
@@ -100,7 +104,7 @@ async def change_password(
 
     await user_service.update_password(user_id, data.new_password)
 
-    return ProfileDto.validate_model(user)
+    return ProfileDto.model_validate(user)
 
 @authRouter.post("/update-profile")
 async def update_profile(
@@ -115,4 +119,4 @@ async def update_profile(
 
     await user_service.update_profile(user_id, data)
 
-    return ProfileDto.validate_model(user)
+    return ProfileDto.model_validate(user)

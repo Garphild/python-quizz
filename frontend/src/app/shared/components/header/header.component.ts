@@ -227,7 +227,7 @@ export class HeaderComponent {
 
   logout(): void {
     this.authService.logout().subscribe(() => {
-      this.authService.currentUser.set(null);
+      this.authService.setCurrentUser(null);
       this.router.navigate(['/']);
     });
   }

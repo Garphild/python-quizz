@@ -9,18 +9,29 @@ export class I18nService {
   currentLang = signal<string>(environment.defaultLanguage);
 
   constructor() {
+    // Configure TranslateService
+    this.translate.addLangs(environment.supportedLanguages);
+    this.translate.setDefaultLang(environment.defaultLanguage);
+    
+    // Use saved language or default
     const saved = localStorage.getItem('lang') || environment.defaultLanguage;
     this.setLanguage(saved);
   }
 
   setLanguage(lang: string): void {
-    this.translate.use(lang);
-    this.currentLang.set(lang);
-    localStorage.setItem('lang', lang);
+    this.translate.use(lang).subscribe({
+      next: () => {
+        this.currentLang.set(lang);
+        localStorage.setItem('lang', lang);
 
-    // RTL support for Hebrew
-    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
+        // RTL support for Hebrew
+        document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+      },
+      error: (err) => {
+        console.error('Failed to load language:', lang, err);
+      }
+    });
   }
 
   get supportedLanguages(): string[] {

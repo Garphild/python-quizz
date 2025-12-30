@@ -35,22 +35,22 @@ import { NotificationService } from '../../../core/services/notification.service
           <mat-icon>add_circle</mat-icon>
         </div>
 
-        <h1>Create New Quiz</h1>
-        <p class="subtitle">Transform any YouTube video into an interactive quiz</p>
+        <h1>{{ 'QUIZ.CREATE' | translate }}</h1>
+        <p class="subtitle">{{ 'QUIZ.CREATE_SUBTITLE' | translate }}</p>
 
         <!-- Create Card -->
         <div class="create-card">
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="input-section">
               <mat-form-field appearance="outline" class="url-field">
-                <mat-label>YouTube Video URL</mat-label>
+                <mat-label>{{ 'QUIZ.YOUTUBE_URL' | translate }}</mat-label>
                 <mat-icon matPrefix>link</mat-icon>
                 <input matInput formControlName="url" placeholder="https://www.youtube.com/watch?v=...">
                 @if (form.get('url')?.hasError('required')) {
-                  <mat-error>URL is required</mat-error>
+                  <mat-error>{{ 'ERRORS.REQUIRED' | translate }}</mat-error>
                 }
                 @if (form.get('url')?.hasError('pattern')) {
-                  <mat-error>Enter a valid YouTube URL</mat-error>
+                  <mat-error>{{ 'ERRORS.INVALID_FORMAT' | translate }}</mat-error>
                 }
               </mat-form-field>
             </div>
@@ -59,20 +59,20 @@ import { NotificationService } from '../../../core/services/notification.service
             <div class="how-it-works">
               <h3>
                 <mat-icon>auto_awesome</mat-icon>
-                How it works
+                {{ 'QUIZ.HOW_IT_WORKS' | translate }}
               </h3>
               <div class="steps">
                 <div class="step">
                   <div class="step-num">1</div>
-                  <span>Paste a YouTube video link</span>
+                  <span>{{ 'QUIZ.STEP_1' | translate }}</span>
                 </div>
                 <div class="step">
                   <div class="step-num">2</div>
-                  <span>AI analyzes video content</span>
+                  <span>{{ 'QUIZ.STEP_2' | translate }}</span>
                 </div>
                 <div class="step">
                   <div class="step-num">3</div>
-                  <span>Quiz questions generated automatically</span>
+                  <span>{{ 'QUIZ.STEP_3' | translate }}</span>
                 </div>
               </div>
             </div>
@@ -86,15 +86,19 @@ import { NotificationService } from '../../../core/services/notification.service
                 class="create-btn"
                 [disabled]="form.invalid || isLoading()">
                 @if (isLoading()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                  <span>Generating Quiz...</span>
+                  <ng-container>
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>{{ 'QUIZ.GENERATING' | translate }}</span>
+                  </ng-container>
                 } @else {
-                  <mat-icon>auto_awesome</mat-icon>
-                  Generate Quiz
+                  <ng-container>
+                    <mat-icon>auto_awesome</mat-icon>
+                    {{ 'QUIZ.GENERATE' | translate }}
+                  </ng-container>
                 }
               </button>
               <button mat-stroked-button type="button" routerLink="/app/quizzes" class="cancel-btn">
-                Cancel
+                {{ 'COMMON.CANCEL' | translate }}
               </button>
             </div>
           </form>

@@ -50,25 +50,25 @@ import { NotificationService } from '../../../core/services/notification.service
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>person</mat-icon>
-                <span>Profile</span>
+                <span>{{ 'AUTH.PROFILE' | translate }}</span>
               </ng-template>
               <div class="tab-content">
                 <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
                   <mat-form-field appearance="outline">
-                    <mat-label>Email</mat-label>
+                    <mat-label>{{ 'AUTH.EMAIL' | translate }}</mat-label>
                     <mat-icon matPrefix>email</mat-icon>
                     <input matInput type="email" [value]="authService.currentUser()?.email" disabled>
                   </mat-form-field>
 
                   <div class="form-row">
                     <mat-form-field appearance="outline">
-                      <mat-label>First Name</mat-label>
+                      <mat-label>{{ 'AUTH.NAME' | translate }}</mat-label>
                       <mat-icon matPrefix>person</mat-icon>
                       <input matInput formControlName="name">
                     </mat-form-field>
 
                     <mat-form-field appearance="outline">
-                      <mat-label>Last Name</mat-label>
+                      <mat-label>{{ 'AUTH.SURNAME' | translate }}</mat-label>
                       <input matInput formControlName="surname">
                     </mat-form-field>
                   </div>
@@ -77,8 +77,10 @@ import { NotificationService } from '../../../core/services/notification.service
                     @if (isLoading()) {
                       <mat-spinner diameter="20"></mat-spinner>
                     } @else {
-                      <mat-icon>save</mat-icon>
-                      Save Changes
+                      <ng-container>
+                        <mat-icon>save</mat-icon>
+                        {{ 'COMMON.SAVE' | translate }}
+                      </ng-container>
                     }
                   </button>
                 </form>
@@ -88,13 +90,13 @@ import { NotificationService } from '../../../core/services/notification.service
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon>lock</mat-icon>
-                <span>Security</span>
+                <span>{{ 'PROFILE.SECURITY' | translate }}</span>
               </ng-template>
               <div class="tab-content">
-                <h3>Change Password</h3>
+                <h3>{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h3>
                 <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
                   <mat-form-field appearance="outline">
-                    <mat-label>Current Password</mat-label>
+                    <mat-label>{{ 'AUTH.OLD_PASSWORD' | translate }}</mat-label>
                     <mat-icon matPrefix>lock</mat-icon>
                     <input matInput [type]="hideOldPwd() ? 'password' : 'text'" formControlName="old_password">
                     <button mat-icon-button matSuffix type="button" (click)="hideOldPwd.set(!hideOldPwd())">
@@ -103,21 +105,23 @@ import { NotificationService } from '../../../core/services/notification.service
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>New Password</mat-label>
+                    <mat-label>{{ 'AUTH.NEW_PASSWORD' | translate }}</mat-label>
                     <mat-icon matPrefix>lock_outline</mat-icon>
                     <input matInput [type]="hideNewPwd() ? 'password' : 'text'" formControlName="new_password">
                     <button mat-icon-button matSuffix type="button" (click)="hideNewPwd.set(!hideNewPwd())">
                       <mat-icon>{{ hideNewPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
                     </button>
-                    <mat-hint>Minimum 8 characters</mat-hint>
+                    <mat-hint>{{ 'PROFILE.MIN_8_CHARS' | translate }}</mat-hint>
                   </mat-form-field>
 
                   <button mat-raised-button color="primary" type="submit" class="save-btn" [disabled]="passwordForm.invalid || isLoading()">
                     @if (isLoading()) {
                       <mat-spinner diameter="20"></mat-spinner>
                     } @else {
-                      <mat-icon>lock_reset</mat-icon>
-                      Update Password
+                      <ng-container>
+                        <mat-icon>lock_reset</mat-icon>
+                        {{ 'PROFILE.UPDATE_PASSWORD' | translate }}
+                      </ng-container>
                     }
                   </button>
                 </form>
@@ -130,7 +134,7 @@ import { NotificationService } from '../../../core/services/notification.service
           <div class="logout-section">
             <button mat-stroked-button color="warn" (click)="onLogout()">
               <mat-icon>logout</mat-icon>
-              Sign Out
+              {{ 'AUTH.LOGOUT' | translate }}
             </button>
           </div>
         </div>

@@ -18,23 +18,23 @@ import { AuthService } from '../../core/services/auth.service';
           <div class="hero-icon">
             <mat-icon>school</mat-icon>
           </div>
-          <h1 class="hero-title">Quiz App</h1>
+          <h1 class="hero-title">{{ 'LANDING.HERO_TITLE' | translate }}</h1>
           <p class="hero-subtitle">
-            Transform YouTube videos into interactive quizzes with AI-powered question generation
+            {{ 'LANDING.HERO_SUBTITLE' | translate }}
           </p>
           
           <div class="hero-features">
             <div class="feature">
               <mat-icon>smart_toy</mat-icon>
-              <span>AI-Powered</span>
+              <span>{{ 'LANDING.FEATURE_1' | translate }}</span>
             </div>
             <div class="feature">
               <mat-icon>youtube_searched_for</mat-icon>
-              <span>From YouTube</span>
+              <span>{{ 'LANDING.FEATURE_2' | translate }}</span>
             </div>
             <div class="feature">
               <mat-icon>quiz</mat-icon>
-              <span>Interactive</span>
+              <span>{{ 'LANDING.FEATURE_3' | translate }}</span>
             </div>
           </div>
 
@@ -42,18 +42,18 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="cta-buttons">
               <button mat-raised-button color="primary" class="cta-primary" routerLink="/app/quizzes">
                 <mat-icon>arrow_forward</mat-icon>
-                Go to Dashboard
+                {{ 'LANDING.CTA_GO_APP' | translate }}
               </button>
             </div>
           } @else {
             <div class="cta-buttons">
               <button mat-raised-button color="primary" class="cta-primary" routerLink="/auth/register">
                 <mat-icon>person_add</mat-icon>
-                Get Started Free
+                {{ 'LANDING.CTA_REGISTER' | translate }}
               </button>
               <button mat-stroked-button color="primary" class="cta-secondary" routerLink="/auth/login">
                 <mat-icon>login</mat-icon>
-                Sign In
+                {{ 'LANDING.CTA_LOGIN' | translate }}
               </button>
             </div>
           }
@@ -69,32 +69,32 @@ import { AuthService } from '../../core/services/auth.service';
 
       <!-- How It Works -->
       <section class="how-it-works">
-        <h2>How It Works</h2>
+        <h2>{{ 'LANDING.HOW_IT_WORKS' | translate }}</h2>
         <div class="steps">
           <div class="step">
             <div class="step-number">1</div>
             <mat-icon>link</mat-icon>
-            <h3>Paste YouTube URL</h3>
-            <p>Simply paste a link to any educational YouTube video</p>
+            <h3>{{ 'LANDING.STEP_1_TITLE' | translate }}</h3>
+            <p>{{ 'LANDING.STEP_1_DESC' | translate }}</p>
           </div>
           <div class="step">
             <div class="step-number">2</div>
             <mat-icon>psychology</mat-icon>
-            <h3>AI Generates Quiz</h3>
-            <p>Our AI analyzes the video and creates relevant questions</p>
+            <h3>{{ 'LANDING.STEP_2_TITLE' | translate }}</h3>
+            <p>{{ 'LANDING.STEP_2_DESC' | translate }}</p>
           </div>
           <div class="step">
             <div class="step-number">3</div>
             <mat-icon>emoji_events</mat-icon>
-            <h3>Learn & Track</h3>
-            <p>Take quizzes, get instant feedback, track your progress</p>
+            <h3>{{ 'LANDING.STEP_3_TITLE' | translate }}</h3>
+            <p>{{ 'LANDING.STEP_3_DESC' | translate }}</p>
           </div>
         </div>
       </section>
 
       <!-- Footer -->
       <footer class="landing-footer">
-        <p>&copy; 2024 Quiz App. Learn smarter, not harder.</p>
+        <p>{{ 'LANDING.FOOTER' | translate }}</p>
       </footer>
     </div>
   `,

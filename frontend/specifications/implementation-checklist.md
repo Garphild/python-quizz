@@ -133,11 +133,11 @@
   - [x] Confirm/Cancel buttons
 
 ### 4.4 Loading Spinner Component
-- [ ] Створити `shared/components/loading-spinner/loading-spinner.component.ts`
+- [x] Створити `shared/components/loading-spinner/loading-spinner.component.ts`
 
 ### 4.5 Empty State Component
-- [ ] Створити `shared/components/empty-state/empty-state.component.ts`
-  - [ ] Icon, message, action button (optional)
+- [x] Створити `shared/components/empty-state/empty-state.component.ts`
+  - [x] Icon, message, action button (optional)
 
 ---
 

@@ -35,7 +35,7 @@ import { NotificationService } from '../../../core/services/notification.service
             <mat-icon>login</mat-icon>
           </div>
           <h1>{{ 'AUTH.LOGIN' | translate }}</h1>
-          <p>Welcome back! Sign in to continue.</p>
+          <p>{{ 'AUTH.WELCOME_BACK' | translate }}</p>
         </div>
 
         <mat-card class="auth-card">
@@ -57,7 +57,7 @@ import { NotificationService } from '../../../core/services/notification.service
                 <mat-label>{{ 'COMMON.PASSWORD' | translate }}</mat-label>
                 <mat-icon matPrefix>lock</mat-icon>
                 <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
-                <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
+                <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
                   <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
                 @if (form.get('password')?.hasError('required')) {
@@ -74,14 +74,16 @@ import { NotificationService } from '../../../core/services/notification.service
                 @if (isLoading()) {
                   <mat-spinner diameter="20"></mat-spinner>
                 } @else {
-                  <mat-icon>arrow_forward</mat-icon>
-                  {{ 'AUTH.LOGIN' | translate }}
+                  <ng-container>
+                    <mat-icon>arrow_forward</mat-icon>
+                    {{ 'AUTH.LOGIN' | translate }}
+                  </ng-container>
                 }
               </button>
             </form>
 
             <div class="auth-divider">
-              <span>or</span>
+              <span>{{ 'AUTH.OR' | translate }}</span>
             </div>
 
             <p class="auth-link">
@@ -93,7 +95,7 @@ import { NotificationService } from '../../../core/services/notification.service
 
         <a routerLink="/" class="back-link">
           <mat-icon>arrow_back</mat-icon>
-          Back to home
+          {{ 'AUTH.BACK_HOME' | translate }}
         </a>
       </div>
     </div>
@@ -260,13 +262,13 @@ export class LoginComponent {
 
     this.authService.login({ email: email!, password: password! }).subscribe({
       next: (profile) => {
-        this.authService.currentUser.set(profile);
+        this.authService.setCurrentUser(profile);
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/app/quizzes';
         this.router.navigate([returnUrl]);
       },
       error: () => {
         this.isLoading.set(false);
-        this.notificationService.error('ERRORS.LOGIN_FAILED');
+        this.notificationService.error('NOTIFICATIONS.INVALID_CREDENTIALS');
       }
     });
   }
