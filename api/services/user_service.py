@@ -1,3 +1,4 @@
+from api.repositories.user_repository import UserRepository, get_user_repository
 import bcrypt
 from providers.models.user_model import UserModel
 from providers.postgree_provider import get_db
@@ -7,13 +8,9 @@ from fastapi import Depends
 from routes.dto.auth_dto import RegisterRequestDto, ProfileDto
 
 class UserService:
-    def _get_db(self):
-        return next(get_db())
-    
-    async def get_by_email(self, email: str) -> ProfileDto | None:
-        db = self._get_db()
+    async def get_by_email(self, email: str, userRepository: UserRepository = Depends(get_user_repository)) -> ProfileDto | None:
         try:
-            user = db.query(UserModel).filter(UserModel.email == email).first()
+            user = userRepository.get_user_model_by_email(email)
 
             if user is None:
                 return None
@@ -21,20 +18,16 @@ class UserService:
             return ProfileDto.model_validate(user)
         except Exception:
             return None
-        finally:
-            db.close()
 
-    async def get_user_model_by_email(self, email: str) -> UserModel | None:
-        db = self._get_db()
+    async def get_user_model_by_email(self, email: str, userRepository: UserRepository = Depends(get_user_repository)) -> UserModel | None:
         try:
-            return db.query(UserModel).filter(UserModel.email == email).first()
+            return userRepository.get_user_model_by_email(email)
         except Exception:
             return None
 
-    async def verify_login(self, email: str, password: str) -> ProfileDto | None:
-        db = self._get_db()
+    async def verify_login(self, email: str, password: str, userRepository: UserRepository = Depends(get_user_repository)) -> ProfileDto | None:
         try:
-            user = db.query(UserModel).filter(UserModel.email == email).first()
+            user = userRepository.get_user_model_by_email(email)
             if user is None:
                 return None
             is_valid = user.verify_password(password)
@@ -43,18 +36,14 @@ class UserService:
             return ProfileDto.model_validate(user)
         except Exception as e:
             return None
-        finally:
-            db.close()
 
-    async def get_by_id(self, id: int) -> UserModel | None:
-        db = self._get_db()
+    async def get_by_id(self, id: int, db: Session = Depends(get_db)) -> UserModel | None:
         try:
             return db.query(UserModel).filter(UserModel.id == id).first()
         except Exception:
             return None
 
-    async def create_user(self, user: RegisterRequestDto) -> ProfileDto | None:
-        db = self._get_db()
+    async def create_user(self, user: RegisterRequestDto, db: Session = Depends(get_db)) -> ProfileDto | None:
         try:
             # Hash password first
             hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -74,13 +63,10 @@ class UserService:
         except Exception:
             db.rollback()
             return None
-        finally:
-            db.close()
         
     
 
-    async def update_password(self, user_id: int, new_password: str) -> bool:
-        db = self._get_db()
+    async def update_password(self, user_id: int, new_password: str, db: Session = Depends(get_db)) -> bool:
         try:
             user_model = db.query(UserModel).filter(UserModel.id == user_id).first()
             if user_model is None:
@@ -92,11 +78,8 @@ class UserService:
         except Exception:
             db.rollback()
             return False
-        finally:
-            db.close()
 
-    async def update_profile(self, user_id: int, data) -> ProfileDto | None:
-        db = self._get_db()
+    async def update_profile(self, user_id: int, data, db: Session = Depends(get_db)) -> ProfileDto | None:
         try:
             user_model = db.query(UserModel).filter(UserModel.id == user_id).first()
             if user_model is None:
@@ -113,11 +96,8 @@ class UserService:
         except Exception:
             db.rollback()
             return None
-        finally:
-            db.close()
 
-    async def delete_user(self, user_id: int) -> bool:
-        db = self._get_db()
+    async def delete_user(self, user_id: int, db: Session = Depends(get_db)) -> bool:
         try:
             user_model = db.query(UserModel).filter(UserModel.id == user_id).first()
             if user_model is None:
@@ -129,7 +109,5 @@ class UserService:
         except Exception:
             db.rollback()
             return False
-        finally:
-            db.close()
 
 user_service = UserService()

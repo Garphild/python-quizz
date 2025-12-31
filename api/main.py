@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 
 from routes.health import router as health_router
 from routes.home import router as home_router
@@ -10,14 +9,13 @@ from routes.answers import answer_router
 from routes.questions import question_router
 from routes.quizz import quizz_router
 
-from providers.postgree_provider import Base, engine, SessionLocal
-
-load_dotenv()
+from core.lifespan import lifespan
 
 app = FastAPI(
     title="Quizz API",
     description="Backend API for the Quizz application",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(

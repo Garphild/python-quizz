@@ -9,3 +9,4 @@ authx==1.4.3
 python-jose==3.5.0
 bcrypt==5.0.0
 youtube-transcript-api==1.2.3
+asyncpg==0.31.0

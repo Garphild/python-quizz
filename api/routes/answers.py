@@ -3,10 +3,10 @@ from routes.dto.answer_dto import CreateAnswerDto, UpdateAnswerDto, AnswerDto, V
 from services.answer_service import answerService
 from typing import Annotated
 
-answer_router = APIRouter(prefix="/api/quizz/{quizz_id}/answers", tags=["quizz -> answers"])
+answer_router = APIRouter(prefix="/api/quizz/{quizz_id}/questions/{question_id}/answers", tags=["quizz -> question -> answers"])
 
 @answer_router.get("/")
-async def get_answers(quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])]) -> list[AnswerDto]:
+async def get_answers(quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])], question_id: Annotated[int, Path(description="Question ID", examples=[1])]) -> list[AnswerDto]:
     quizz_answers = answerService.get_answers(quizz_id)
     return [AnswerDto(**answer) for answer in quizz_answers]
 
@@ -31,7 +31,7 @@ async def delete_answer(quizz_id: Annotated[int, Path(description="Quizz ID", ex
 
     return True
 
-@answer_router.get("/validate/{question_id}/{answer_id}")
+@answer_router.get("/validate/{answer_id}")
 async def validate_answer(
     quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])], 
     question_id: Annotated[int, Path(description="Question ID", examples=[1])],

@@ -3,36 +3,18 @@ from typing import Optional, Annotated
 from pydantic import BaseModel, Field
 
 class PublicUser(BaseModel):
-    id: int
-    name: str
-    surname: str
-    email: str
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    deleted_at: Optional[datetime] = None
+    id: Annotated[int, Field(gt=0, description="User ID")]
+    name: Annotated[str, Field(min_length=1, max_length=100, description="User name")]
+    surname: Annotated[str, Field(min_length=1, max_length=100, description="User surname")]
+    email: Annotated[str, Field(max_length=255, description="User email")]
+    created_at: Annotated[Optional[datetime], Field(description="Creation timestamp")] = None
+    updated_at: Annotated[Optional[datetime], Field(description="Last update timestamp")] = None
+    deleted_at: Annotated[Optional[datetime], Field(description="Deletion timestamp")] = None
 
-class UserEntity(PublicUser):
-    password: str
+class User(BaseModel):
+    password: Annotated[str, Field(min_length=1, description="User password")]
 
-class PublicUserDto(BaseModel):
-    id: Annotated[int, Field(description="User identifier")]
-    name: Annotated[str, Field(description="User's first name")]
-    surname: Annotated[str, Field(description="User's last name")]
-    email: Annotated[str, Field(description="User's email address")]
+class UserEntity(User, PublicUser):
+    class Config:
+        from_attributes = True
 
-class UserCreateDto(BaseModel):
-    name: Annotated[str, Field(description="User's first name")]
-    surname: Annotated[str, Field(description="User's last name")]
-    email: Annotated[str, Field(description="User's email address")]
-    password: Annotated[str, Field(description="User's password")]
-
-class UserLoginDto(BaseModel):
-    email: Annotated[str, Field(description="User's email address")]
-    password: Annotated[str, Field(description="User's password")]
-
-class GoogleUserDto(BaseModel):
-    email: Annotated[str, Field(description="User's email address")]
-    name: Annotated[str, Field(description="User's first name")]
-    surname: Annotated[str, Field(description="User's last name")]
-    google_id: Annotated[str | None, Field(description="Google user ID", default=None)]
-    avatar_url: Annotated[str | None, Field(description="User's avatar URL", default=None)]

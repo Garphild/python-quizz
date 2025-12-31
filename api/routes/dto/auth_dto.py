@@ -42,3 +42,19 @@ class ChangePasswordDto(BaseModel):
     old_password: Annotated[str, Field(description="Current password")]
     new_password: Annotated[str, Field(description="New password")]
 
+
+class PublicUserDto(BaseModel):
+    id: Annotated[int, Field(description="User identifier")]
+    name: Annotated[str, Field(description="User's first name")]
+    surname: Annotated[str, Field(description="User's last name")]
+    email: Annotated[str, Field(description="User's email address")]
+
+class UserCreateDto(BaseModel):
+    name: Annotated[str, Field(description="User's first name")]
+    surname: Annotated[str, Field(description="User's last name")]
+    email: Annotated[str, Field(description="User's email address")]
+    password: Annotated[str, Field(description="User's password")]
+
+class UserLoginDto(BaseModel):
+    email: Annotated[str, Field(description="User's email address")]
+    password: Annotated[str, Field(description="User's password")]

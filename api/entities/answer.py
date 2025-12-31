@@ -2,32 +2,17 @@ from datetime import datetime
 from typing import Annotated, Optional
 from pydantic import BaseModel, Field
 
-class PublicAnswer:
-    id: int
-    answer: str
-    quiz_id: int
+class PublicAnswer(BaseModel):
+    id: Annotated[int, Field(gt=0, description="Answer ID")]
+    answer: Annotated[str, Field(min_length=1, max_length=1000, description="Answer text")]
+    quiz_id: Annotated[int, Field(gt=0, description="Quiz ID")]
+    description: Annotated[Optional[str], Field(max_length=1000, description="Answer description")] = None
+    created_at: Annotated[Optional[datetime], Field(description="Creation timestamp")] = None
+    updated_at: Annotated[Optional[datetime], Field(description="Last update timestamp")] = None
+    deleted_at: Annotated[Optional[datetime], Field(description="Deletion timestamp")] = None
 
-class Answer(PublicAnswer):
-    is_correct: bool
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    deleted_at: Optional[datetime] = None
-
-class AnswerEntity(Answer):
-    pass
-
-class PublicAnswerDto(BaseModel):
-    id: Annotated[int, Field(description="Answer ID")]
-    answer: Annotated[str, Field(description="Answer text")]
-    quiz_id: Annotated[int, Field(description="Quiz ID")]
-
-class AnswerDto(PublicAnswerDto):
+class AnswerEntity(PublicAnswer, BaseModel):
     is_correct: Annotated[bool, Field(description="Whether this answer is correct")]
 
-class CreateAnswerDto(BaseModel):
-    answer: Annotated[str, Field(description="Answer text")]
-    is_correct: Annotated[bool, Field(description="Whether this answer is correct")]
-
-class UpdateAnswerDto(BaseModel):
-    answer: Annotated[Optional[str], Field(description="Answer text")]
-    is_correct: Annotated[Optional[bool], Field(description="Whether this answer is correct")]
+    class Config:
+        from_attributes = True

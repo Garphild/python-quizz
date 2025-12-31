@@ -1,8 +1,10 @@
+from providers.models.mixins.soft_delete_mixin import SoftDeleteMixin
+from providers.models.mixins.timestamps_mixin import TimestampMixin
 from sqlalchemy import Column, Integer, String
 from providers.postgree_provider import Base
 import bcrypt
 
-class UserModel(Base):
+class UserModel(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
