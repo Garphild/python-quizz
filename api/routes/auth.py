@@ -32,11 +32,14 @@ async def post_register(
         )
     ]
 ) -> bool | None:
-    existing_user = await user_service.get_by_email(newUser.email)
+    existing_user = await user_service.get_user_model_by_email(newUser.email)
     if existing_user:
         raise HTTPException(status_code=400, detail="User with this email already exists")
 
     user = await user_service.create_user(newUser)
+
+    if not user:
+        raise HTTPException(status_code=500, detail="Failed to create user")
 
     return True
 
@@ -84,7 +87,7 @@ async def logout() -> bool:
 async def get_profile() -> ProfileDto:
     user_id = security.get_current_user_id()
 
-    user = await user_service.get_by_id(user_id)
+    user = await user_service.get_user_model_by_id(user_id)
 
     return ProfileDto.model_validate(user)
 
@@ -94,7 +97,7 @@ async def change_password(
 ) -> ProfileDto:
     user_id = security.get_current_user_id()
 
-    user = await user_service.get_by_id(user_id)
+    user = await user_service.get_user_model_by_id(user_id)
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -112,7 +115,7 @@ async def update_profile(
 ) -> ProfileDto:
     user_id = security.get_current_user_id()
 
-    user = await user_service.get_by_id(user_id)
+    user = await user_service.get_user_model_by_id(user_id)
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
