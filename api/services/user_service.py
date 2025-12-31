@@ -56,30 +56,25 @@ class UserService:
         userRepository: UserRepository = Depends(get_user_repository)
     ) -> UserModel | None:
         try:
-            # Hash password first
             hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             if hashed is None:
                 raise Exception("Failed to hash password")
 
-            if user.surname is None:
-                user.surname = ""
-
+            surname = user.surname or ""
             if user.name is None:
                 raise Exception("Name is required")
-            
             if user.email is None:
                 raise Exception("Email is required")
 
-            user_model = await userRepository.add(user.email, user.name, user.surname, hashed)
+            user_model = await userRepository.add(user.email, user.name, surname, hashed)
 
-            if user_model is None:
-                raise Exception("Failed to create user")
-        except Exception:
-            return None
-        else:
-            await userRepository.refresh(user_model)
+            await userRepository.db.commit()
+            await userRepository.db.refresh(user_model)
             return user_model
+        except Exception:
+            await userRepository.db.rollback()
+            return None
 
     async def update_password(
         self,
@@ -94,10 +89,12 @@ class UserService:
             
             user_model.set_password(new_password)
             await userRepository.update(password=new_password, id=user_id)
-        except Exception:
-            raise Exception("Failed to update user")
-        else:
+
+            await userRepository.db.commit()
             return True
+        except Exception:
+            await userRepository.db.rollback()
+            return False
 
     async def update_profile(
         self,
@@ -114,12 +111,14 @@ class UserService:
             )
 
             if user_model is None:
-                raise Exception("Failed to update user")
-        except Exception:
-            return None
-        else:
-            await userRepository.refresh(user_model)
+                return None
+
+            await userRepository.db.commit()
+            await userRepository.db.refresh(user_model)
             return user_model
+        except Exception:
+            await userRepository.db.rollback()
+            return None
 
     async def delete_user(
         self,
@@ -128,12 +127,13 @@ class UserService:
     ) -> bool:
         try:
             result = await userRepository.delete(user_id)
-
             if not result:
-                raise Exception("Failed to delete user")
-        except Exception:
-            return False
-        else:
+                return False
+
+            await userRepository.db.commit()
             return True
+        except Exception:
+            await userRepository.db.rollback()
+            return False
 
 user_service = UserService()
