@@ -30,20 +30,17 @@ class QuizzRepository:
         id: int,
         user_id: int
     ) -> QuizzModel:
+        stmt = select(QuizzModel).filter(
+            QuizzModel.id == id,
+            QuizzModel.deleted_at.is_(None),
+            QuizzModel.user_id == user_id,
+        )
         try:
-            stmt = select(QuizzModel).filter(
-                QuizzModel.id == id,
-                QuizzModel.deleted_at.is_(None),
-                QuizzModel.user_id == user_id
-            )
             result = await self.db.execute(stmt)
             quizz_model = result.scalar_one_or_none()
         except SQLAlchemyError as exc:
             logger.exception("Failed to get quizz model by id: %s", id)
             raise DatabaseError("Failed to get quizz model by id") from exc
-        except Exception as e:
-            logger.exception("Failed to get quizz model by id: %s", id)
-            raise DatabaseError("Failed to get quizz model by id") from e
 
         if quizz_model is None:
             raise ItemNotFound("Quizz not found")
@@ -61,24 +58,18 @@ class QuizzRepository:
         self,
         user_id: int
     ) -> list[QuizzModel]:
+        stmt = select(QuizzModel).filter(
+            QuizzModel.deleted_at.is_(None),
+            QuizzModel.user_id == user_id,
+        )
         try:
-            stmt = select(QuizzModel).filter(
-                QuizzModel.deleted_at.is_(None),
-                QuizzModel.user_id == user_id
-            )
             result = await self.db.execute(stmt)
             quizz_models = result.scalars().all()
         except SQLAlchemyError as exc:
             logger.exception("Failed to get all quizz models")
             raise DatabaseError("Failed to get all quizz models") from exc
-        except Exception as e:
-            logger.exception("Failed to get all quizz models")
-            raise DatabaseError("Failed to get all quizz models") from e
         
-        if quizz_models is None:
-            raise ItemNotFound("Quizzes not found")
-
-        if len(quizz_models) == 0:
+        if not quizz_models:
             raise ItemNotFound("Quizzes not found")
         
         return quizz_models
@@ -99,22 +90,20 @@ class QuizzRepository:
         user_id: int,
         url: str
     ) -> QuizzModel:
+        quizz_model = QuizzModel()
+        quizz_model.name = name
+        quizz_model.description = description
+        quizz_model.user_id = user_id
+        quizz_model.url = url
+
         try:
-            quizz_model = QuizzModel()
-            quizz_model.name = name
-            quizz_model.description = description
-            quizz_model.user_id = user_id
-            quizz_model.url = url
-            await self.db.add(quizz_model)
+            self.db.add(quizz_model)
         except IntegrityError as exc:
-            logger.exception("Failed to add quizz: %s", name)
+            logger.exception("Failed to add quizz (duplicate?): %s", name)
             raise DatabaseError("Quizz with this name already exists") from exc
         except SQLAlchemyError as exc:
             logger.exception("Failed to add quizz: %s", name)
             raise DatabaseError("Failed to add quizz") from exc
-        except Exception as e:
-            logger.exception("Failed to add quizz: %s", name)
-            raise DatabaseError("Failed to add quizz") from e
         
         return quizz_model
 
@@ -148,9 +137,6 @@ class QuizzRepository:
         except SQLAlchemyError as exc:
             logger.exception("Failed to update quizz: %s", id)
             raise DatabaseError("Failed to update quizz") from exc
-        except Exception as e:
-            logger.exception("Failed to update quizz: %s", id)
-            raise DatabaseError("Failed to update quizz") from e
         
         return quizz_model
 
@@ -174,8 +160,5 @@ class QuizzRepository:
         except SQLAlchemyError as exc:
             logger.exception("Failed to delete quizz: %s", id)
             raise DatabaseError("Failed to delete quizz") from exc
-        except Exception as e:
-            logger.exception("Failed to delete quizz: %s", id)
-            raise DatabaseError("Failed to delete quizz") from e
         
         return True
