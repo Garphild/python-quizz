@@ -1,13 +1,21 @@
-from fastapi import APIRouter, Query, Path, Body, HTTPException
+from fastapi import APIRouter, Path, Body, HTTPException
 from routes.dto.question_dto import QuestionDto, CreateQuestionDto, UpdateQuestionDto
-from services.question_service import questionService
 from typing import Annotated
+from fastapi import Depends
+from services.deps import get_questions_service
+from services.question_service import QuestionsService
 
 question_router = APIRouter(prefix="/api/quizz/{quizz_id}/questions", tags=["quizz -> questions"])
 
 @question_router.get("/")
-async def get_questions(quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])]):
-    return questionService.get_all_by_quizz_id(quizz_id)
+async def get_questions(
+    quizz_id: Annotated[
+        int, 
+        Path(description="Quizz ID", examples=[1])
+    ],
+    question_service: QuestionsService = Depends(get_questions_service)
+) -> list[QuestionDto]:
+    return question_service.get_questions(quizz_id)
 
 @question_router.get("/{question_id}")
 async def get_question(
@@ -18,13 +26,14 @@ async def get_question(
     question_id: Annotated[
         int, 
         Path(description="Question ID", examples=[1])
-    ]
+    ],
+    question_service: QuestionsService = Depends(get_questions_service)
 ) -> QuestionDto:
-    currentQuestion = questionService.get_by_id(quizz_id, question_id)
-    if not currentQuestion:
+    question = question_service.get_question_by_id(quizz_id, question_id)
+    if not question:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    return currentQuestion
+    return question
 
 @question_router.post("/")
 async def create_question(
@@ -38,9 +47,10 @@ async def create_question(
             description="Question data", 
             examples=[{"text": "Question text"}]
         )
-    ]
+    ],
+    question_service: QuestionsService = Depends(get_questions_service)
 ) -> QuestionDto:
-    return questionService.create(quizz_id, question)
+    return question_service.create_question(quizz_id, question)
 
 @question_router.put("/{question_id}")
 async def update_question(
@@ -58,13 +68,14 @@ async def update_question(
             description="Question data", 
             examples=[{"text": "Question text"}]
         )
-    ]
+    ],
+    question_service: QuestionsService = Depends(get_questions_service) 
 ) -> QuestionDto:
-    currentQuestion = questionService.get_by_id(quizz_id, question_id)
+    currentQuestion = question_service.get_question_by_id(quizz_id, question_id)
     if not currentQuestion:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    createdQuestion = questionService.update(quizz_id, question_id, question)
+    createdQuestion = question_service.update_question(quizz_id, question_id, question)
     if not createdQuestion:
         raise HTTPException(status_code=404, detail="Question not found")
 
@@ -79,11 +90,12 @@ async def delete_question(
     question_id: Annotated[
         int, 
         Path(description="Question ID", examples=[1])
-    ]
+    ],
+    question_service: QuestionsService = Depends(get_questions_service)
 ) -> bool:
-    currentQuestion = questionService.get_by_id(quizz_id, question_id)
+    currentQuestion = question_service.get_question_by_id(quizz_id, question_id)
     if not currentQuestion:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    questionService.delete(quizz_id, question_id)
+    question_service.delete_question(quizz_id, question_id)
     return True

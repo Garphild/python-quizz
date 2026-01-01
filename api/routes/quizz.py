@@ -1,18 +1,25 @@
 from fastapi import APIRouter, Path, Body
 from routes.dto.quizz_dto import QuizzDto, CreateQuizzDto, UpdateQuizzDto
 from typing import Annotated
+from fastapi import HTTPException
 
-from services.quizz_service import quizzService
+from services.quizz_service import quizz_service
 
 quizz_router = APIRouter(prefix="/api/quizz", tags=["quizz"])
 
 @quizz_router.get("/", description="Get all available quizz")
-async def get_quizz() -> list[QuizzDto]:
-    return await quizzService.get_all()
+async def get_all_quizzes() -> list[QuizzDto]:
+    return await quizz_service.get_all()
 
 @quizz_router.get("/{quizz_id}", description="Get quizz by id")
-async def get_quizz(quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])]) -> QuizzDto:
-    return await quizzService.get_by_id(quizz_id)
+async def get_quizz_by_id(
+    quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])]
+) -> QuizzDto:
+    quizz = await quizz_service.get_by_id(quizz_id)
+    if not quizz:
+        raise HTTPException(status_code=404, detail="Quizz not found")
+
+    return QuizzDto.from_orm(quizz)
 
 @quizz_router.post("/", description="Create new quizz")
 async def create_quizz(
@@ -21,7 +28,11 @@ async def create_quizz(
         Body(description="Quizz data", examples=[{"url": "https://www.youtube.com/watch?v=example"}])
     ]
 ) -> QuizzDto:
-    return await quizzService.create(quizz)
+    quizz = await quizz_service.create(quizz)
+    if not quizz:
+        raise HTTPException(status_code=404, detail="Quizz not found")
+
+    return QuizzDto.from_orm(quizz)
 
 @quizz_router.put("/{quizz_id}", description="Update quizz by id")
 async def update_quizz(
@@ -34,7 +45,11 @@ async def update_quizz(
         Body(description="Quizz data", examples=[{"name": "Quizz name", "description": "Quizz description"}])
     ]
 ) -> QuizzDto:
-    return await quizzService.update(quizz_id, quizz)
+    quizz = await quizz_service.update(quizz_id, quizz)
+    if not quizz:
+        raise HTTPException(status_code=404, detail="Quizz not found")
+
+    return QuizzDto.from_orm(quizz)
 
 @quizz_router.delete("/{quizz_id}", description="Delete quizz by id")
 async def delete_quizz(
@@ -43,4 +58,8 @@ async def delete_quizz(
         Path(description="Quizz ID", examples=[1])
     ]
 ) -> bool:
-    return await quizzService.delete(quizz_id)
+    quizz = await quizz_service.delete(quizz_id)
+    if not quizz:
+        raise HTTPException(status_code=404, detail="Quizz not found")
+
+    return True
