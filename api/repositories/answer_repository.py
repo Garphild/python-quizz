@@ -1,9 +1,12 @@
-from fastapi import Request
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from providers.models.answer_model import AnswerModel
 from errors.database_error import DatabaseError
 from errors.item_not_found import ItemNotFound
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+
+logger = logging.getLogger(__name__)
 
 class AnswerRepository:
     db: AsyncSession | None = None
@@ -27,17 +30,23 @@ class AnswerRepository:
         question_id: int,
         user_id: int,
     ) -> list[AnswerModel]:
+        stmt = select(AnswerModel).filter(
+            AnswerModel.question_id == question_id,
+            AnswerModel.deleted_at.is_(None),
+            AnswerModel.user_id == user_id,
+            AnswerModel.quizz_id == quizz_id
+        )
         try:
-            stmt = select(AnswerModel).filter(AnswerModel.question_id == question_id, AnswerModel.deleted_at.is_(None), AnswerModel.user_id == user_id, AnswerModel.quizz_id == quizz_id)
             result = await self.db.execute(stmt)
-            result = result.scalars().all()
-        except Exception:
-            raise DatabaseError("Failed to get answers by question id")
+            answers = result.scalars().all()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get answers by question id")
+            raise DatabaseError("Failed to get answers by question id") from exc
 
-        if result is None:
+        if not answers:
             raise ItemNotFound("Answers not found")
 
-        return result
+        return answers
 
     '''
     Get answer by Id
@@ -54,23 +63,24 @@ class AnswerRepository:
         answer_id: int,
         user_id: int,
     ) -> AnswerModel:        
+        stmt = select(AnswerModel).filter(
+            AnswerModel.id == answer_id,
+            AnswerModel.deleted_at.is_(None),
+            AnswerModel.user_id == user_id,
+            AnswerModel.quizz_id == quizz_id,
+            AnswerModel.question_id == question_id
+        )
         try:
-            stmt = select(AnswerModel).filter(
-                AnswerModel.id == answer_id,
-                AnswerModel.deleted_at.is_(None),
-                AnswerModel.user_id == user_id,
-                AnswerModel.quizz_id == quizz_id,
-                AnswerModel.question_id == question_id
-            )
             result = await self.db.execute(stmt)
-            result = result.scalar_one_or_none()
-        except Exception:
-            raise DatabaseError("Failed to get answer by id")
+            answer = result.scalar_one_or_none()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get answer by id")
+            raise DatabaseError("Failed to get answer by id") from exc
 
-        if result is None:
+        if answer is None:
             raise ItemNotFound("Answer not found")
 
-        return result
+        return answer
 
     '''
     Create new answer
@@ -93,9 +103,12 @@ class AnswerRepository:
 
         try:
             await self.db.add(answer_model)
-            await self.db.refresh(answer_model)
-        except Exception:
-            raise DatabaseError("Failed to add answer")
+        except IntegrityError as exc:
+            logger.exception("Failed to add answer (duplicate?)")
+            raise DatabaseError("Answer with this text already exists") from exc
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to add answer")
+            raise DatabaseError("Failed to add answer") from exc
 
         return answer_model
 
@@ -130,14 +143,17 @@ class AnswerRepository:
         if answer_model is None:
             raise ItemNotFound("Answer not found")
         
-        answer_model.answer_text = text or answer_model.answer_text
-        answer_model.is_correct = is_correct or answer_model.is_correct
+        if text is not None:
+            answer_model.answer_text = text
+        
+        if is_correct is not None:
+            answer_model.is_correct = is_correct
         
         try:
             await self.db.merge(answer_model)
-            await self.db.refresh(answer_model)
-        except Exception:
-            raise DatabaseError("Failed to update answer")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to update answer")
+            raise DatabaseError("Failed to update answer") from exc
         
         return answer_model
 
@@ -153,16 +169,21 @@ class AnswerRepository:
         self,
         answer_id: int,
         quizz_id: int,
+        question_id: int,
+        user_id: int,
     ) -> bool:
         answer_model = await self.get_answer_by_id(
             quizz_id,
+            question_id,
             answer_id,
+            user_id
         )
 
         answer_model.soft_delete()
         try:
             await self.db.merge(answer_model)
-        except Exception:
-            raise DatabaseError("Failed to delete answer")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to delete answer")
+            raise DatabaseError("Failed to delete answer") from exc
         
         return True

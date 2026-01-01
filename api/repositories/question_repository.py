@@ -1,9 +1,12 @@
-from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from providers.models.question_model import QuestionModel
 from errors.item_not_found import ItemNotFound
 from errors.database_error import DatabaseError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+import logging
+
+logger = logging.getLogger(__name__)
 
 class QuestionRepository:
     db: AsyncSession | None = None
@@ -26,17 +29,18 @@ class QuestionRepository:
         quizz_id: int,
         user_id: int
     ) -> list[QuestionModel]:
+        stmt = select(QuestionModel).filter(QuestionModel.quizz_id == quizz_id, QuestionModel.deleted_at.is_(None), QuestionModel.user_id == user_id)
         try:
-            stmt = select(QuestionModel).filter(QuestionModel.quizz_id == quizz_id, QuestionModel.deleted_at.is_(None), QuestionModel.user_id == user_id)
             result = await self.db.execute(stmt)
-            result = result.scalars().all()
-        except Exception:
-            raise DatabaseError("Failed to get all questions")
+            questions = result.scalars().all()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get all questions")
+            raise DatabaseError("Failed to get all questions") from exc
 
-        if result is None:
+        if not questions:
             raise ItemNotFound("Questions not found")
         
-        return result
+        return questions
     
     '''
     Get question by Id
@@ -52,17 +56,23 @@ class QuestionRepository:
         question_id: int,
         user_id: int
     ) -> QuestionModel:
+        stmt = select(QuestionModel).filter(
+            QuestionModel.id == question_id,
+            QuestionModel.deleted_at.is_(None),
+            QuestionModel.user_id == user_id,
+            QuestionModel.quizz_id == quizz_id
+        )
         try:
-            stmt = select(QuestionModel).filter(QuestionModel.id == question_id, QuestionModel.deleted_at.is_(None), QuestionModel.user_id == user_id, QuestionModel.quizz_id == quizz_id)
             result = await self.db.execute(stmt)
-            result = result.scalar_one_or_none()
-        except Exception:
-            raise DatabaseError("Failed to get question by id")
+            question = result.scalar_one_or_none()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get question by id")
+            raise DatabaseError("Failed to get question by id") from exc
         
-        if result is None:
+        if question is None:
             raise ItemNotFound("Question not found")
         
-        return result
+        return question
 
     '''
     Create new question
@@ -84,9 +94,12 @@ class QuestionRepository:
         question.question_text = question_text
         try:
             await self.db.add(question)
-            await self.db.refresh(question)
-        except Exception:
-            raise DatabaseError("Failed to add question")
+        except IntegrityError as exc:
+            logger.exception("Failed to add question (duplicate?)")
+            raise DatabaseError("Question with this text already exists") from exc
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to add question")
+            raise DatabaseError("Failed to add question") from exc
         
         return question
 
@@ -112,9 +125,9 @@ class QuestionRepository:
         question.question_text = question_text
         try:
             await self.db.merge(question)
-            await self.db.refresh(question)
-        except Exception:
-            raise DatabaseError("Failed to update question")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to update question")
+            raise DatabaseError("Failed to update question") from exc
         
         return question
 
@@ -138,7 +151,8 @@ class QuestionRepository:
         question.soft_delete()
         try:
             await self.db.merge(question)
-        except Exception:
-            raise DatabaseError("Failed to delete question")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to delete question")
+            raise DatabaseError("Failed to delete question") from exc
         
         return True
