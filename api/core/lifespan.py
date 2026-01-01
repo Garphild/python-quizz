@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from providers.postgree_provider import make_engine, make_sessionmaker, Base
-from providers.models import user_model, quizz_model, question_model, answer_model
 
 @asynccontextmanager
 async def lifespan(app):
