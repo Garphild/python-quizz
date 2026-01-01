@@ -11,10 +11,8 @@ class AnswerService:
         answer_repository: AnswerRepository = Depends(get_answer_repository)
     ) -> list[AnswerModel]:
         answers = await answer_repository.get_answers_by_question_id(question_id)
-        if not answers:
-            raise Exception("Answers not found")
 
-        return [AnswerModel.from_orm(answer) for answer in answers]
+        return answers
 
     async def get_answer_by_id(
         self,
@@ -22,10 +20,8 @@ class AnswerService:
         answer_repository: AnswerRepository = Depends(get_answer_repository)
     ) -> AnswerModel:
         answer = await answer_repository.get_answer_by_id(answer_id)
-        if not answer:
-            raise Exception("Answer not found")
 
-        return AnswerModel.from_orm(answer)
+        return answer
 
     async def add(
         self,
@@ -38,10 +34,8 @@ class AnswerService:
         answer_repository: AnswerRepository = Depends(get_answer_repository)
     ) -> AnswerModel:
         answer = await answer_repository.add(text, is_correct, user_id, description, quizz_id, question_id)
-        if not answer:
-            raise Exception("Answer not found")
 
-        return AnswerModel.from_orm(answer)
+        return answer
 
     async def update(
         self,
@@ -52,10 +46,8 @@ class AnswerService:
         answer_repository: AnswerRepository = Depends(get_answer_repository)
     ) -> AnswerModel:
         answer = await answer_repository.update(answer_id, text, is_correct, description)
-        if not answer:
-            raise Exception("Answer not found")
 
-        return AnswerModel.from_orm(answer)
+        return answer
 
     async def delete(
         self,
@@ -63,7 +55,5 @@ class AnswerService:
         answer_repository: AnswerRepository = Depends(get_answer_repository)
     ) -> bool:
         result = await answer_repository.delete(answer_id)
-        if not result:
-            return False
 
-        return True
+        return result

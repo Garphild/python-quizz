@@ -1,19 +1,10 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 from typing import Annotated
 from routes.dto.auth_dto import ChangePasswordDto, RegisterRequestDto, ProfileDto, LoginRequestDto, UpdateProfileDto
-from authx import AuthX, AuthXConfig
 from fastapi import Depends
 from services.user_service import UserService
 from services.deps import get_user_service
-
-config = AuthXConfig(
-    JWT_ALGORITHM="HS256",
-    JWT_SECRET_KEY="your-secret-key-here",
-    JWT_ACCESS_COOKIE_NAME="auth_token",
-    JWT_TOKEN_LOCATION=["cookies"]
-)
-
-security = AuthX(config=config)
+from core.security import security
 
 authRouter = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -91,45 +82,42 @@ async def logout(
 
 @authRouter.get("/profile")
 async def get_profile(
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
-    user_id = security.get_current_user_id()
+    user_model = await user_service.get_user_model_by_id(user_id)
 
-    user = await user_service.get_user_model_by_id(user_id)
-
-    return ProfileDto.model_validate(user)
+    return ProfileDto.model_validate(user_model)
 
 @authRouter.post("/change-password")
 async def change_password(
     data: ChangePasswordDto,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
-    user_id = security.get_current_user_id()
+    user_model = await user_service.get_user_model_by_id(user_id)
 
-    user = await user_service.get_user_model_by_id(user_id)
-
-    if not user:
+    if not user_model:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    if not user.verify_password(data.old_password):
+    if not user_model.verify_password(data.old_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     await user_service.update_password(user_id, data.new_password)
 
-    return ProfileDto.model_validate(user)
+    return ProfileDto.model_validate(user_model)
 
 @authRouter.post("/update-profile")
 async def update_profile(
     data: UpdateProfileDto,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
-    user_id = security.get_current_user_id()
+    user_model = await user_service.get_user_model_by_id(user_id)
 
-    user = await user_service.get_user_model_by_id(user_id)
-
-    if not user:
+    if not user_model:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     await user_service.update_profile(user_id, data)
 
-    return ProfileDto.model_validate(user)
+    return ProfileDto.model_validate(user_model)
