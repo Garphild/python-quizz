@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 from typing import Annotated
 from routes.dto.auth_dto import ChangePasswordDto, RegisterRequestDto, ProfileDto, LoginRequestDto, UpdateProfileDto
-from services.user_service import user_service
 from authx import AuthX, AuthXConfig
+from fastapi import Depends
+from services.user_service import UserService
+from services.deps import get_user_service
 
 config = AuthXConfig(
     JWT_ALGORITHM="HS256",
@@ -30,7 +32,8 @@ async def post_register(
                 }
             ]
         )
-    ]
+    ],
+    user_service: UserService = Depends(get_user_service)
 ) -> bool | None:
     existing_user = await user_service.get_user_model_by_email(newUser.email)
     if existing_user:
@@ -60,7 +63,8 @@ async def login(
                 }
             }
         )
-    ]
+    ],
+    user_service: UserService = Depends(get_user_service)
 ) -> ProfileDto:
     profile = await user_service.verify_login(loginReq.email, loginReq.password)
     if not profile:
@@ -78,13 +82,17 @@ async def login(
     return profile
 
 @authRouter.post("/logout")
-async def logout() -> bool:
+async def logout(
+    user_service: UserService = Depends(get_user_service)
+) -> bool:
     security.logout()
 
     return True
 
 @authRouter.get("/profile")
-async def get_profile() -> ProfileDto:
+async def get_profile(
+    user_service: UserService = Depends(get_user_service)
+) -> ProfileDto:
     user_id = security.get_current_user_id()
 
     user = await user_service.get_user_model_by_id(user_id)
@@ -93,7 +101,8 @@ async def get_profile() -> ProfileDto:
 
 @authRouter.post("/change-password")
 async def change_password(
-    data: ChangePasswordDto
+    data: ChangePasswordDto,
+    user_service: UserService = Depends(get_user_service)
 ) -> ProfileDto:
     user_id = security.get_current_user_id()
 
@@ -111,7 +120,8 @@ async def change_password(
 
 @authRouter.post("/update-profile")
 async def update_profile(
-    data: UpdateProfileDto
+    data: UpdateProfileDto,
+    user_service: UserService = Depends(get_user_service)
 ) -> ProfileDto:
     user_id = security.get_current_user_id()
 

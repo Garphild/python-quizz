@@ -7,6 +7,6 @@ class AnswerModel(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "answers"
 
     id = Column(Integer, primary_key=True, index=True)
-    question_id = Column(Integer, ForeignKey("questions.id"))
+    question_id = Column(Integer, ForeignKey("questions.id", ondelete="CASCADE"), index=True)
     answer_text = Column(String, nullable=False)
     is_correct = Column(Boolean, default=False)

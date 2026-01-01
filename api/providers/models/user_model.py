@@ -8,10 +8,10 @@ class UserModel(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    surname = Column(String, nullable=True, index=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String, nullable=False)
+    name = Column(String(100), index=True)
+    surname = Column(String(100), nullable=True, index=True)
+    email = Column(String(100), unique=True, index=True)
+    password = Column(String(100), nullable=False)
 
     def verify_password(self, password: str) -> bool:
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))

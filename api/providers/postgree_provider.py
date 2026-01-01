@@ -11,7 +11,7 @@ def make_engine() -> AsyncEngine:
     )
 
 
-def make_sessionmaker(engine: AsyncEngine) -> AsyncSession:
+def make_sessionmaker(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(
         engine,
         autocommit=False,

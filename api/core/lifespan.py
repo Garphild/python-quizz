@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 
 from providers.postgree_provider import make_engine, make_sessionmaker, Base
+# Keep models to create tables until migration is ready
+from providers.models import user_model, quizz_model, question_model, answer_model
 
 @asynccontextmanager
 async def lifespan(app):

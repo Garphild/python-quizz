@@ -14,8 +14,6 @@ class UserService:
         user_repository: UserRepository = Depends(get_user_repository)
     ) -> UserModel:
         user = await user_repository.get_user_model_by_email(email)
-        if user is None:
-            raise ItemNotFound("User not found")
 
         return user
 
@@ -40,31 +38,46 @@ class UserService:
         user_repository: UserRepository = Depends(get_user_repository)
     ) -> UserModel:
         user = await user_repository.get_user_model_by_id(id)
-        if user is None:
-            raise ItemNotFound("User not found")
 
         return user
 
     async def create_user(
         self,
-        user: RegisterRequestDto,
+        password: str,
+        email: str,
+        name: str,
+        surname: str,
         user_repository: UserRepository = Depends(get_user_repository)
     ) -> UserModel:
-        hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        if password is None:
+            raise Exception("Password is required")
 
-        if hashed is None:
-            raise Exception("Failed to hash password")
-
-        surname = user.surname or ""
-        if user.name is None:
-            raise Exception("Name is required")
-        if user.email is None:
+        if len(password) < 8:
+            raise Exception("Password must be at least 8 characters long")
+        
+        if email is None:
             raise Exception("Email is required")
+        
+        if name is None:
+            raise Exception("Name is required")
+        
+        if surname is None:
+            raise Exception("Surname is required")
+        
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        user_model = await user_repository.add(user.email, user.name, surname, hashed)
+        user_model = await user_repository.add(email, name, surname, hashed)
 
-        await user_repository.db.commit()
-        await user_repository.db.refresh(user_model)
+        try:
+            await user_repository.db.commit()
+            await user_repository.db.refresh(user_model)
+        except IntegrityError as exc:
+            await user_repository.db.rollback()
+            raise DatabaseError("User with this email already exists") from exc
+        except SQLAlchemyError as exc:
+            await user_repository.db.rollback()
+            raise DatabaseError("Failed to create user") from exc
+
         return user_model
 
     async def update_password(
@@ -73,14 +86,17 @@ class UserService:
         new_password: str,
         userRepository: UserRepository = Depends(get_user_repository)
     ) -> bool:
-        user_model = await userRepository.get_user_model_by_id(user_id)
-        if user_model is None:
-            raise ItemNotFound("User not found")
+        await userRepository.get_user_model_by_id(user_id)
         
-        user_model.set_password(new_password)
-        await userRepository.update(password=new_password, id=user_id)
+        hashed = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        await userRepository.db.commit()
+        try:
+            await userRepository.update(password=hashed, id=user_id)
+            await userRepository.db.commit()
+        except SQLAlchemyError as exc:
+            await userRepository.db.rollback()
+            raise DatabaseError("Failed to update password") from exc
+
         return True
 
     async def update_profile(
@@ -99,8 +115,13 @@ class UserService:
         if user_model is None:
             return None
 
-        await userRepository.db.commit()
-        await userRepository.db.refresh(user_model)
+        try:
+            await userRepository.db.commit()
+            await userRepository.db.refresh(user_model)
+        except SQLAlchemyError as exc:
+            await userRepository.db.rollback()
+            raise DatabaseError("Failed to update profile") from exc
+
         return user_model
 
     async def delete_user(
@@ -108,11 +129,13 @@ class UserService:
         user_id: int,
         userRepository: UserRepository = Depends(get_user_repository)
     ) -> bool:
-        result = await userRepository.delete(user_id)
-        if not result:
-            return False
+        await userRepository.delete(user_id)
 
-        await userRepository.db.commit()
+        try:
+            await userRepository.db.commit()
+        except SQLAlchemyError as exc:
+            await userRepository.db.rollback()
+            raise DatabaseError("Failed to delete user") from exc
+
         return True
 
-user_service = UserService()

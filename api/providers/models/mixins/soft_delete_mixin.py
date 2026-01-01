@@ -4,4 +4,7 @@ class SoftDeleteMixin:
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
     def soft_delete(self):
-        self.deleted_at = func.now()    
+        self.deleted_at = func.now()
+
+    def soft_undelete(self):
+        self.deleted_at = None

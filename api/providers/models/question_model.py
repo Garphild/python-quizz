@@ -7,5 +7,5 @@ class QuestionModel(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    quizz_id = Column(Integer, ForeignKey("quizzes.id"))
+    quizz_id = Column(Integer, ForeignKey("quizzes.id", ondelete="CASCADE"), index=True)
     question_text = Column(String, nullable=False)
