@@ -1,9 +1,12 @@
-from fastapi import Request
+import logging
 from sqlalchemy import select
 from providers.models.quizz_model import QuizzModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from errors.item_not_found import ItemNotFound
 from errors.database_error import DatabaseError
+
+logger = logging.getLogger(__name__)
 
 class QuizzRepository:
     db: AsyncSession | None = None
@@ -34,14 +37,18 @@ class QuizzRepository:
                 QuizzModel.user_id == user_id
             )
             result = await self.db.execute(stmt)
-            result = result.scalar_one_or_none()
-        except Exception:
-            raise DatabaseError("Failed to get quizz model by id")
+            quizz_model = result.scalar_one_or_none()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get quizz model by id: %s", id)
+            raise DatabaseError("Failed to get quizz model by id") from exc
+        except Exception as e:
+            logger.exception("Failed to get quizz model by id: %s", id)
+            raise DatabaseError("Failed to get quizz model by id") from e
 
-        if result is None:
+        if quizz_model is None:
             raise ItemNotFound("Quizz not found")
         
-        return result
+        return quizz_model
 
     '''
     Get all quizz models
@@ -60,14 +67,21 @@ class QuizzRepository:
                 QuizzModel.user_id == user_id
             )
             result = await self.db.execute(stmt)
-            result = result.scalars().all()
-        except Exception:
-            raise DatabaseError("Failed to get all quizz models")
+            quizz_models = result.scalars().all()
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to get all quizz models")
+            raise DatabaseError("Failed to get all quizz models") from exc
+        except Exception as e:
+            logger.exception("Failed to get all quizz models")
+            raise DatabaseError("Failed to get all quizz models") from e
         
-        if result is None:
+        if quizz_models is None:
+            raise ItemNotFound("Quizzes not found")
+
+        if len(quizz_models) == 0:
             raise ItemNotFound("Quizzes not found")
         
-        return result
+        return quizz_models
 
     '''
     Create new quizz
@@ -92,9 +106,15 @@ class QuizzRepository:
             quizz_model.user_id = user_id
             quizz_model.url = url
             await self.db.add(quizz_model)
-            await self.db.refresh(quizz_model)
-        except Exception:
-            raise DatabaseError("Failed to add quizz")
+        except IntegrityError as exc:
+            logger.exception("Failed to add quizz: %s", name)
+            raise DatabaseError("Quizz with this name already exists") from exc
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to add quizz: %s", name)
+            raise DatabaseError("Failed to add quizz") from exc
+        except Exception as e:
+            logger.exception("Failed to add quizz: %s", name)
+            raise DatabaseError("Failed to add quizz") from e
         
         return quizz_model
 
@@ -115,25 +135,22 @@ class QuizzRepository:
         description: str | None = None,
         user_id: int | None = None,
     ) -> QuizzModel | None:
-        try:
-            quizz_model = await self.get_quizz_model_by_id(
-                id,
-                user_id
-            )
-        except Exception:
-            raise DatabaseError("Failed to get quizz model")
-        
-        if quizz_model is None:
-            raise ItemNotFound("Quizz not found")
+        quizz_model = await self.get_quizz_model_by_id(
+            id,
+            user_id
+        )
         
         quizz_model.name = name or quizz_model.name
         quizz_model.description = description or quizz_model.description
         quizz_model.user_id = user_id or quizz_model.user_id
         try:
             await self.db.merge(quizz_model)
-            await self.db.refresh(quizz_model)
-        except Exception:
-            raise DatabaseError("Failed to update quizz")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to update quizz: %s", id)
+            raise DatabaseError("Failed to update quizz") from exc
+        except Exception as e:
+            logger.exception("Failed to update quizz: %s", id)
+            raise DatabaseError("Failed to update quizz") from e
         
         return quizz_model
 
@@ -146,21 +163,19 @@ class QuizzRepository:
     @throws: DatabaseError
     '''
     async def delete(self, id: int, user_id: int) -> bool:
-        try:
-            quizz_model = await self.get_quizz_model_by_id(
-                id,
-                user_id
-            )
-        except Exception:
-            raise DatabaseError("Failed to delete quizz")
-
-        if quizz_model is None:
-            raise ItemNotFound("Quizz not found")
-        
+        quizz_model = await self.get_quizz_model_by_id(
+            id,
+            user_id
+        )
+     
         quizz_model.soft_delete()
         try:
             await self.db.merge(quizz_model)
-        except Exception:
-            raise DatabaseError("Failed to delete quizz")
+        except SQLAlchemyError as exc:
+            logger.exception("Failed to delete quizz: %s", id)
+            raise DatabaseError("Failed to delete quizz") from exc
+        except Exception as e:
+            logger.exception("Failed to delete quizz: %s", id)
+            raise DatabaseError("Failed to delete quizz") from e
         
         return True
