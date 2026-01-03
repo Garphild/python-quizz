@@ -23,9 +23,10 @@ class QuizzService:
         except Exception:
             return None
     
-    async def create(self, user_id: int, name: str, description: str, url: str) -> QuizzModel:
+    async def create(self, url: str) -> QuizzModel:
         try:
-            quizz_model = await self.quizz_repository.add(name, description, user_id, url)
+            
+            quizz_model = await self.quizz_repository.add(url)
 
             await self.quizz_repository.db.commit()
             await self.quizz_repository.db.refresh(quizz_model)

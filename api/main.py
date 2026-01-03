@@ -8,6 +8,7 @@ from routes.auth import authRouter
 from routes.answers import answer_router
 from routes.questions import question_router
 from routes.quizz import quizz_router
+from core.security import security
 
 from core.lifespan import lifespan
 
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Auto refresh access token via cookies when close to expiry
+app.middleware("http")(security.implicit_refresh_middleware)
 
 # ------------ Home routes --------------------------
 app.include_router(home_router)

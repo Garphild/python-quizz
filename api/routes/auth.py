@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException, Response
+from fastapi import APIRouter, Body, HTTPException, Response, Request
 from typing import Annotated
 from routes.dto.auth_dto import ChangePasswordDto, RegisterRequestDto, ProfileDto, LoginRequestDto, UpdateProfileDto
 from fastapi import Depends
@@ -71,24 +71,41 @@ async def login(
     if not user.verify_password(loginReq.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    token = security.create_access_token(uid=str(user.id))
-    response.set_cookie(
-        key="auth_token",
-        value=token,
-        httponly=True,
-        max_age=3600 * 24,
-        samesite="lax"
-    )
+    access_token = security.create_access_token(uid=str(user.id))
+    refresh_token = security.create_refresh_token(uid=str(user.id))
+
+    security.set_access_cookies(access_token, response=response)
+    security.set_refresh_cookies(refresh_token, response=response)
     
     return ProfileDto.from_orm(user)
 
 @authRouter.post("/logout")
 async def logout(
+    response: Response,
     user_service: UserService = Depends(get_user_service)
 ) -> bool:
-    security.logout()
-
+    security.unset_cookies(response)
     return True
+
+
+@authRouter.post("/refresh")
+async def refresh_tokens(
+    request: Request,
+    response: Response,
+) -> dict[str, str]:
+    try:
+        refresh_payload = await security.refresh_token_required(request)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    uid = str(refresh_payload.sub)
+    new_access_token = security.create_access_token(uid=uid)
+    new_refresh_token = security.create_refresh_token(uid=uid)
+
+    security.set_access_cookies(new_access_token, response=response)
+    security.set_refresh_cookies(new_refresh_token, response=response)
+
+    return {"access_token": new_access_token}
 
 @authRouter.get("/profile")
 async def get_profile(

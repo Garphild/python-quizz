@@ -37,7 +37,7 @@ async def create_quizz(
     user_id: int = Depends(security.get_current_subject),
     quizz_service: QuizzService = Depends(get_quizz_service)
 ) -> QuizzDto:
-    quizz = await quizz_service.create(quizz, user_id)
+    quizz = await quizz_service.create(quizz.url)
     if not quizz:
         raise HTTPException(status_code=404, detail="Quizz not found")
 
