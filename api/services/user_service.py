@@ -1,19 +1,21 @@
 import bcrypt
 from providers.models.user_model import UserModel
-from fastapi import Depends
 from repositories.user_repository import UserRepository
-from repositories.deps import get_user_repository
 from errors.invalid_credentials import InvalidCredentials
 from errors.database_error import DatabaseError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 class UserService:
+    user_repository: UserRepository | None = None
+    
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
+    
     async def get_user_model_by_email(
         self,
         email: str,
-        user_repository: UserRepository = Depends(get_user_repository)
-    ) -> UserModel:
-        user = await user_repository.get_user_model_by_email(email)
+    ) -> UserModel | None:
+        user = await self.user_repository.get_user_model_by_email(email)
 
         return user
 
@@ -21,23 +23,16 @@ class UserService:
         self,
         email: str,
         password: str,
-        user_repository: UserRepository = Depends(get_user_repository)
-    ) -> UserModel:
-        user = await user_repository.get_user_model_by_email(email)
+    ) -> bool:
+        user = await self.user_repository.get_user_model_by_email(email)
 
-        is_valid = user.verify_password(password)
-
-        if not is_valid:
-            raise InvalidCredentials("Invalid credentials")
-
-        return user
+        return user.verify_password(password)
 
     async def get_user_model_by_id(
         self,
         id: int,
-        user_repository: UserRepository = Depends(get_user_repository)
     ) -> UserModel:
-        user = await user_repository.get_user_model_by_id(id)
+        user = await self.user_repository.get_user_model_by_id(id)
 
         return user
 
@@ -47,7 +42,6 @@ class UserService:
         email: str,
         name: str,
         surname: str,
-        user_repository: UserRepository = Depends(get_user_repository)
     ) -> UserModel:
         if password is None:
             raise Exception("Password is required")
@@ -66,16 +60,19 @@ class UserService:
         
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        user_model = await user_repository.add(email, name, surname, hashed)
+        user_model = await self.user_repository.add(email, name, surname, hashed)
+
+        if user_model is None:
+            raise DatabaseError("Failed to create user")
 
         try:
-            await user_repository.db.commit()
-            await user_repository.db.refresh(user_model)
+            await self.user_repository.db.commit()
+            await self.user_repository.db.refresh(user_model)
         except IntegrityError as exc:
-            await user_repository.db.rollback()
+            await self.user_repository.db.rollback()
             raise DatabaseError("User with this email already exists") from exc
         except SQLAlchemyError as exc:
-            await user_repository.db.rollback()
+            await self.user_repository.db.rollback()
             raise DatabaseError("Failed to create user") from exc
 
         return user_model
@@ -84,17 +81,19 @@ class UserService:
         self,
         user_id: int,
         new_password: str,
-        userRepository: UserRepository = Depends(get_user_repository)
     ) -> bool:
-        await userRepository.get_user_model_by_id(user_id)
+        user_model = await self.user_repository.get_user_model_by_id(user_id)
+        
+        if user_model is None:
+            raise DatabaseError("User not found")
         
         hashed = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         try:
-            await userRepository.update(password=hashed, id=user_id)
-            await userRepository.db.commit()
+            await self.user_repository.update(password=hashed, id=user_id)
+            await self.user_repository.db.commit()
         except SQLAlchemyError as exc:
-            await userRepository.db.rollback()
+            await self.user_repository.db.rollback()
             raise DatabaseError("Failed to update password") from exc
 
         return True
@@ -103,9 +102,8 @@ class UserService:
         self,
         user_id: int,
         data,
-        userRepository: UserRepository = Depends(get_user_repository)
     ) -> UserModel | None:
-        user_model = await userRepository.update(
+        user_model = await self.user_repository.update(
             id=user_id,
             name=data.name,
             surname=data.surname,
@@ -116,10 +114,10 @@ class UserService:
             return None
 
         try:
-            await userRepository.db.commit()
-            await userRepository.db.refresh(user_model)
+            await self.user_repository.db.commit()
+            await self.user_repository.db.refresh(user_model)
         except SQLAlchemyError as exc:
-            await userRepository.db.rollback()
+            await self.user_repository.db.rollback()
             raise DatabaseError("Failed to update profile") from exc
 
         return user_model
@@ -127,14 +125,18 @@ class UserService:
     async def delete_user(
         self,
         user_id: int,
-        userRepository: UserRepository = Depends(get_user_repository)
     ) -> bool:
-        await userRepository.delete(user_id)
+        user_model = await self.user_repository.get_user_model_by_id(user_id)
+        
+        if user_model is None:
+            raise DatabaseError("User not found")
+
+        await self.user_repository.delete(user_id)
 
         try:
-            await userRepository.db.commit()
+            await self.user_repository.db.commit()
         except SQLAlchemyError as exc:
-            await userRepository.db.rollback()
+            await self.user_repository.db.rollback()
             raise DatabaseError("Failed to delete user") from exc
 
         return True

@@ -2,8 +2,7 @@ from fastapi import APIRouter, Path, HTTPException, Depends
 from routes.dto.answer_dto import CreateAnswerDto, UpdateAnswerDto, AnswerDto, ValidateAnswerDto
 from typing import Annotated
 from services.answer_service import AnswerService
-from services.quizz_service import QuizzService
-from services.deps import get_answer_service, get_quizz_service
+from services.deps import get_answer_service
 from core.security import security
 from logging import getLogger
 from errors.item_not_found import ItemNotFound
@@ -17,15 +16,9 @@ async def get_answers(
     quizz_id: Annotated[int, Path(description="Quizz ID", examples=[1])], 
     question_id: Annotated[int, Path(description="Question ID", examples=[1])],
     answer_service: AnswerService = Depends(get_answer_service),
-    quizz_service: QuizzService = Depends(get_quizz_service),
     user_id: int = Depends(security.get_current_subject)
 ) -> list[AnswerDto]:
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-
     try:
-        quizz = await quizz_service.get_by_id(quizz_id, user_id)
         answers = await answer_service.get_answers_by_question_id(question_id)
     except ItemNotFound as e:
         raise HTTPException(status_code=404, detail="Quizz answers not found")

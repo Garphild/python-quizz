@@ -27,10 +27,16 @@ async def post_register(
     user_service: UserService = Depends(get_user_service)
 ) -> bool | None:
     existing_user = await user_service.get_user_model_by_email(newUser.email)
-    if existing_user:
+
+    if existing_user is not None:
         raise HTTPException(status_code=400, detail="User with this email already exists")
 
-    user = await user_service.create_user(newUser)
+    user = await user_service.create_user(
+        password=newUser.password,
+        email=newUser.email,
+        name=newUser.name,
+        surname=newUser.surname
+    )
 
     if not user:
         raise HTTPException(status_code=500, detail="Failed to create user")
@@ -57,11 +63,15 @@ async def login(
     ],
     user_service: UserService = Depends(get_user_service)
 ) -> ProfileDto:
-    profile = await user_service.verify_login(loginReq.email, loginReq.password)
-    if not profile:
+    user = await user_service.get_user_model_by_email(loginReq.email)
+    
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = security.create_access_token(uid=str(profile.id))
+    
+    if not user.verify_password(loginReq.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = security.create_access_token(uid=str(user.id))
     response.set_cookie(
         key="auth_token",
         value=token,
@@ -70,7 +80,7 @@ async def login(
         samesite="lax"
     )
     
-    return profile
+    return ProfileDto.from_orm(user)
 
 @authRouter.post("/logout")
 async def logout(
@@ -86,8 +96,11 @@ async def get_profile(
     user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
     user_model = await user_service.get_user_model_by_id(user_id)
+    
+    if not user_model:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return ProfileDto.model_validate(user_model)
+    return ProfileDto.from_orm(user_model)
 
 @authRouter.post("/change-password")
 async def change_password(
@@ -96,7 +109,7 @@ async def change_password(
     user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
     user_model = await user_service.get_user_model_by_id(user_id)
-
+    
     if not user_model:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -105,7 +118,7 @@ async def change_password(
 
     await user_service.update_password(user_id, data.new_password)
 
-    return ProfileDto.model_validate(user_model)
+    return ProfileDto.from_orm(user_model)
 
 @authRouter.post("/update-profile")
 async def update_profile(
@@ -114,10 +127,10 @@ async def update_profile(
     user_id: int = Depends(security.get_current_subject)
 ) -> ProfileDto:
     user_model = await user_service.get_user_model_by_id(user_id)
-
+    
     if not user_model:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     await user_service.update_profile(user_id, data)
 
-    return ProfileDto.model_validate(user_model)
+    return ProfileDto.from_orm(user_model)

@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from errors.database_error import DatabaseError
-from errors.item_not_found import ItemNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +19,10 @@ class UserRepository:
     '''
     Get user by email
     @param email: str
-    @return: UserModel
-    @throws: ItemNotFound
+    @return: UserModel | None
+    @throws: DatabaseError
     '''    
-    async def get_user_model_by_email(self, email: str) -> UserModel:
+    async def get_user_model_by_email(self, email: str) -> UserModel | None:
         try:
             stmt = select(UserModel).filter(UserModel.email == email, UserModel.deleted_at.is_(None))
             result = await self.db.execute(stmt)
@@ -32,18 +31,15 @@ class UserRepository:
             logger.exception("Failed to get user by email: %s", email)
             raise DatabaseError("Failed to get user by email") from exc
 
-        if user is None:
-            raise ItemNotFound("User not found")
-
         return user
 
     '''
     Get user by id
     @param id: int
-    @return: UserModel
-    @throws: ItemNotFound
+    @return: UserModel | None
+    @throws: DatabaseError
     '''    
-    async def get_user_model_by_id(self, id: int) -> UserModel:
+    async def get_user_model_by_id(self, id: int) -> UserModel | None:
         try:
             stmt = select(UserModel).filter(UserModel.id == id, UserModel.deleted_at.is_(None))
             result = await self.db.execute(stmt)
@@ -51,9 +47,6 @@ class UserRepository:
         except SQLAlchemyError as exc:
             logger.exception("Failed to get user by id: %s", id)
             raise DatabaseError("Failed to get user by id") from exc
-
-        if user is None:
-            raise ItemNotFound("User not found")
 
         return user
 
@@ -63,9 +56,9 @@ class UserRepository:
     @param name: str
     @param surname: str
     @param password: str
-    @return: UserModel
+    @return: UserModel | None
     '''    
-    async def add(self, email: str, name: str, surname: str, password: str) -> UserModel:
+    async def add(self, email: str, name: str, surname: str, password: str) -> UserModel | None:
         user_model = UserModel()
         user_model.email = email
         user_model.name = name
@@ -90,7 +83,8 @@ class UserRepository:
     Delete user
     @param id: int
     @return: bool
-    @throws: ItemNotFound
+    @throws: DatabaseError
+    @throws: Exception
     '''    
     async def delete(self, id: int) -> bool:
         user_model = await self.get_user_model_by_id(id)
@@ -115,8 +109,9 @@ class UserRepository:
     @param name: str | None
     @param surname: str | None
     @param password: str | None
-    @return: UserModel
-    @throws: ItemNotFound
+    @return: UserModel | None
+    @throws: DatabaseError
+    @throws: Exception
     '''    
     async def update(
         self,
@@ -125,7 +120,7 @@ class UserRepository:
         name: str | None = None,
         surname: str | None = None,
         password: str | None = None,
-    ) -> UserModel:
+    ) -> UserModel | None:
         user_model = await self.get_user_model_by_id(id)
 
         if password is not None:
