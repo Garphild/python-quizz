@@ -1,11 +1,11 @@
 import bcrypt
 from providers.models.user_model import UserModel
 from fastapi import Depends
-from routes.dto.auth_dto import RegisterRequestDto
 from repositories.user_repository import UserRepository
 from repositories.deps import get_user_repository
 from errors.invalid_credentials import InvalidCredentials
-from errors.item_not_found import ItemNotFound
+from errors.database_error import DatabaseError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 class UserService:
     async def get_user_model_by_email(
